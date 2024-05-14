@@ -8,10 +8,10 @@ namespace WeatherApplication
     public class FileEncoder
     {
         private static readonly object lockObject = new object();
-        private static FileEncoder instance = new FileEncoder(""); // Initialize instance here
+        private static FileEncoder instance; // Initialize instance here
         private readonly string filePath;
         private readonly byte[] key = Convert.FromBase64String("C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=");
-        private readonly byte[] iv;
+        private readonly byte[] iv; // hi guys how u doingh
 
         private FileEncoder(string filePath)
         {
