@@ -11,7 +11,7 @@ namespace WeatherApplication
         private static FileEncoder instance; // Initialize instance here
         private readonly string filePath;
         private readonly byte[] key = Convert.FromBase64String("C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=");
-        private readonly byte[] iv; // I'm good hiiiiii knuuu
+        private readonly byte[] iv; // I'm good hiiiiii knuuugvghv vhgcfivfgffffffffffffffffffffffffffffffffffffffffffffffffff
 
         private FileEncoder(string filePath)
         {
