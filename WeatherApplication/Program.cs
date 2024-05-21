@@ -27,6 +27,12 @@ namespace WeatherApplication
                     encoder.Write("ApiKey", actualAPIKey);
                 }
 
+                if (string.IsNullOrWhiteSpace(actualAPIKey))
+                {
+                    Console.WriteLine("Register for an API key at https://developer.niwa.co.nz");
+                    return;
+                }
+
                 // Create an instance of WeatherServiceModel with the API key
                 WeatherModel weatherService = new WeatherModel(actualAPIKey);
 
@@ -42,15 +48,9 @@ namespace WeatherApplication
                 // Retrieve weather data and render the view
                 await controller.RefreshWeatherData(actualAPIKey, cityName);
                 controller.RefreshPanelView();
-       //Run through to tidal information
+                //Run through to tidal information
                 double lat = -37.406;
                 double lon = 175.947;
- 
-                if (string.IsNullOrWhiteSpace(actualAPIKey))
-                {
-                    Console.WriteLine("Register for an API key at https://developer.niwa.co.nz");
-                    return;
-                }
 
                 DateTime startDate = new DateTime(2023, 01, 01);
                 DateTime endDate = new DateTime(2023, 12, 31);
