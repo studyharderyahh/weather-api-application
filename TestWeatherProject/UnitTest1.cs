@@ -197,6 +197,32 @@ namespace WeatherApplication.Tests
     }
 
     [TestFixture]
+    public class TideDataDeserializerTests
+    {
+        public class TideModelTests
+        {
+            [Test]
+            public void DeserializeTideData_ReturnsTideDataObject()
+            {
+                // Arrange
+                string json = "{\"metadata\":{\"latitude\":-37.045,\"longitude\":174.846,\"datum\":\"LAT\",\"start\":\"2024-04-28T12:00:00.000Z\",\"days\":7,\"interval\":0,\"height\":\"LAT = 2.241m below MSL\"},\"values\":[{\"time\":\"2024-04-28T13:30:00Z\",\"value\":3.6},{\"time\":\"2024-04-28T19:38:00Z\",\"value\":1},{\"time\":\"2024-04-29T01:46:00Z\",\"value\":3.54},{\"time\":\"2024-04-29T08:03:00Z\",\"value\":0.87},{\"time\":\"2024-04-29T14:21:00Z\",\"value\":3.51},{\"time\":\"2024-04-29T20:32:00Z\",\"value\":1.1},{\"time\":\"2024-04-30T02:41:00Z\",\"value\":3.42},{\"time\":\"2024-04-30T09:01:00Z\",\"value\":0.97},{\"time\":\"2024-04-30T15:23:00Z\",\"value\":3.43},{\"time\":\"2024-04-30T21:38:00Z\",\"value\":1.18},{\"time\":\"2024-05-01T03:49:00Z\",\"value\":3.34},{\"time\":\"2024-05-01T10:10:00Z\",\"value\":1.03},{\"time\":\"2024-05-01T16:35:00Z\",\"value\":3.42},{\"time\":\"2024-05-01T22:52:00Z\",\"value\":1.17},{\"time\":\"2024-05-02T05:05:00Z\",\"value\":3.35},{\"time\":\"2024-05-02T11:25:00Z\",\"value\":1},{\"time\":\"2024-05-02T17:49:00Z\",\"value\":3.51},{\"time\":\"2024-05-03T00:07:00Z\",\"value\":1.04},{\"time\":\"2024-05-03T06:20:00Z\",\"value\":3.47},{\"time\":\"2024-05-03T12:36:00Z\",\"value\":0.86},{\"time\":\"2024-05-03T18:57:00Z\",\"value\":3.69},{\"time\":\"2024-05-04T01:14:00Z\",\"value\":0.83},{\"time\":\"2024-05-04T07:26:00Z\",\"value\":3.67},{\"time\":\"2024-05-04T13:40:00Z\",\"value\":0.68},{\"time\":\"2024-05-04T19:57:00Z\",\"value\":3.89},{\"time\":\"2024-05-05T02:12:00Z\",\"value\":0.6},{\"time\":\"2024-05-05T08:24:00Z\",\"value\":3.89}]}";
+
+                // Act
+                var tideData = JsonConvert.DeserializeObject<TidesModel.TidesData>(json);
+
+                // Assert
+                Assert.IsNotNull(tideData);
+                Assert.IsNotNull(tideData.Metadata);
+                Assert.IsNotNull(tideData.Values);
+                Assert.That(tideData.Metadata.Latitude, Is.EqualTo(-37.045));
+                Assert.That(tideData.Metadata.Longitude, Is.EqualTo(174.846));
+                // Add more assertions as needed
+            }
+        }
+
+    }
+
+    [TestFixture]
     public class HuntingDataLoadingTests
     {
         [Test]
