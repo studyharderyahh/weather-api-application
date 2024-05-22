@@ -11,6 +11,7 @@ namespace WeatherApplication
             try
             {
                 // Get an instance of FileEncoder for handling file operations
+                // Need to do the Validation for the filePath -- if the input filePath is...
                 FileEncoder encoder = FileEncoder.GetInstance("security.sys");
 
                 // Read the API key from the file

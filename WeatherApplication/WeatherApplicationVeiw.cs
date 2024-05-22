@@ -5,6 +5,7 @@ namespace WeatherApplication
 {
     public class WeatherApplicationView 
     {
+        // Method to render weather data to the console.(gpt)
         public void Render(WeatherData weatherData)
         {
             if (null == weatherData)
@@ -14,7 +15,10 @@ namespace WeatherApplication
             }
             else
             {
+                // Display weather data details.(gpt)
                 Console.WriteLine($"Weather for {weatherData.Name}:");
+                // Safe navigation with null-conditional operators.(gpt)
+                Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}");
                 Console.WriteLine($"Coordinates: Lon: {weatherData.Coord?.Lon}, Lat: {weatherData.Coord?.Lat}"); // Added null-conditional operator
                 Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}"); // Added null-conditional operator
                 Console.WriteLine($"Base: {weatherData.Base}");
@@ -37,6 +41,7 @@ namespace WeatherApplication
             }
         }
 
+        // Method to render UV data (currently not implemented)(gpt).
         public void Render (UVModel.UVData uvData)
         {
             if (null == uvData)
@@ -45,10 +50,11 @@ namespace WeatherApplication
             }
             else
             {
-
+                // Add UV data rendering logic here.(gpt)
             }
         }
 
+        // Helper method to convert Unix timestamp to DateTime.(gpt)
         private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;
