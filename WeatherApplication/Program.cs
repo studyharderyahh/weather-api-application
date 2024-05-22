@@ -8,20 +8,65 @@ namespace WeatherApplication
     {
         static async Task Main(string[] args)
         {
+
+
             try
             {
                 // Get an instance of FileEncoder for handling file operations
                 // Need to do the Validation for the filePath -- if the input filePath is...
                 FileEncoder encoder = FileEncoder.GetInstance("security.sys");
+                string weatherApiKey = null;
+                string weatherApiKeyValue = null;
+                Dictionary<string, string> configData = new Dictionary<string, string>();
+
+                try
+                {
+                    // Specify the file path
+                    string filePath = "config/weather.cfg";
+
+
+                    // Check if the file exists
+                    if (!File.Exists(filePath))
+                    {
+                        Console.WriteLine($"The file '{filePath}' does not exist.");
+                        return;
+                    }
+
+                    // Create an instance of configReader
+                    ConfigFileReader configReader = new ConfigFileReader(filePath);
+
+                    // Read all config keys and values
+                    configData = configReader.ReadConfig();
+
+                    /* // Display the API keys and values
+                    foreach (var kvp in configData)
+                    {
+                        Console.WriteLine($"Key: {kvp.Key}");
+                        Console.WriteLine($"Value: {kvp.Value}");
+                        Console.WriteLine();
+                    } */
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
 
                 // Read the API key from the file
-                encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
-                string actualAPIKey = encoder.Read("ApiKey");
+                // encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
+                weatherApiKey = "WeatherApiKey";
+                weatherApiKeyValue = configData[weatherApiKey];
+
+                encoder.Write(weatherApiKey, weatherApiKeyValue);
+
+
+                string actualAPIKey = encoder.Read(weatherApiKey);
 
                 // If API key is not found in the file, prompt the user to input it
                 if (string.IsNullOrEmpty(actualAPIKey))
                 {
-                    Console.Write("Enter API key: ");
+                    Console.Write("Enter Weather API key: ");
                     actualAPIKey = Console.ReadLine();
 
                     // Write the API key to the file
