@@ -20,9 +20,10 @@ namespace WeatherApplication.FileHandlers
             this.m_API_Dictionary = ReadConfig();
         }
 
-        GetAPIKey("")
+        /*GetAPIKey("")
             find APIKey in dictionary
-            and return it
+            and return it*/
+
 
         public void ReadConfig()
         {
