@@ -22,9 +22,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="hunting_season_data.txt">
+    <None Update="config\hunting_season_data.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+    <Folder Include="Controller\" />
+    <Folder Include="View\" />
   </ItemGroup>
 
 </Project>

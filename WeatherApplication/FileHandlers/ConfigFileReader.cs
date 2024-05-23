@@ -5,23 +5,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeatherApplication
+namespace WeatherApplication.FileHandlers
 {
     internal class ConfigFileReader
     {
         private readonly string filePath;
 
+        private m_API_Dictionary<string, string> m_APIDictionary; 
+
         public ConfigFileReader(string filePath)
         {
             this.filePath = filePath;
+            // as soon as you create this load the m_Ap
+            this.m_API_Dictionary = ReadConfig();
         }
 
-        public Dictionary<string, string> ReadConfig()
+        GetAPIKey("")
+            find APIKey in dictionary
+            and return it
+
+        public void ReadConfig()
         {
             try
             {
                 // Read all lines from the file
-                string[] lines = File.ReadAllLines(this.filePath);
+                string[] lines = File.ReadAllLines(filePath);
                 var configKeys = new Dictionary<string, string>();
 
                 // Process each line

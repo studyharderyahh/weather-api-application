@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using WeatherApplication.FileHandlers;
 
-namespace WeatherApplication
+namespace WeatherApplication.ApplicationEntry
 {
     class Program
     {
@@ -36,7 +37,7 @@ namespace WeatherApplication
                     ConfigFileReader configReader = new ConfigFileReader(filePath);
 
                     // Read all config keys and values
-                    configData = configReader.ReadConfig();
+                    configData = configReader.ReadConfig("APIKeyName");
 
                     /* // Display the API keys and values
                     foreach (var kvp in configData)

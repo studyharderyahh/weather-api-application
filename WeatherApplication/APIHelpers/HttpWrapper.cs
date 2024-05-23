@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WeatherApplication
+namespace WeatherApplication.APIHelpers
 {
     public sealed class HttpClientWrapper : IDisposable
     {

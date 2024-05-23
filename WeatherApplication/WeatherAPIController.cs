@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks; // For asynchronous programming.
-using WeatherApplication; // To use components of the WeatherApplication namespace.
+using WeatherApplication.FileHandlers; // To use components of the WeatherApplication namespace.
 
 namespace WeatherApplication
 {
