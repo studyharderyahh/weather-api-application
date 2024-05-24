@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using WeatherApplication.FileHandlers;
 
-namespace WeatherApplication
+namespace WeatherApplication.ApplicationEntry
 {
     class Program
     {
@@ -13,16 +14,14 @@ namespace WeatherApplication
             try
             {
                 // Get an instance of FileEncoder for handling file operations
-                // Need to do the Validation for the filePath -- if the input filePath is...
                 FileEncoder encoder = FileEncoder.GetInstance("security.sys");
-                string weatherApiKey = null;
-                string weatherApiKeyValue = null;
-                Dictionary<string, string> configData = new Dictionary<string, string>();
+                string weatherApiKey = "WeatherApiKey";
+                ConfigFileReader configReader = null;
 
                 try
                 {
                     // Specify the file path
-                    string filePath = "config/weather.cfg";
+                    string filePath = "Config/weatherAppAPIKeys.cfg";
 
 
                     // Check if the file exists
@@ -33,18 +32,7 @@ namespace WeatherApplication
                     }
 
                     // Create an instance of configReader
-                    ConfigFileReader configReader = new ConfigFileReader(filePath);
-
-                    // Read all config keys and values
-                    configData = configReader.ReadConfig();
-
-                    /* // Display the API keys and values
-                    foreach (var kvp in configData)
-                    {
-                        Console.WriteLine($"Key: {kvp.Key}");
-                        Console.WriteLine($"Value: {kvp.Value}");
-                        Console.WriteLine();
-                    } */
+                    configReader  = new ConfigFileReader(filePath);
 
                 }
                 catch (Exception ex)
@@ -52,14 +40,12 @@ namespace WeatherApplication
                     Console.WriteLine(ex.Message);
                 }
 
+                Console.WriteLine(configReader.GetAPIKey("appName"));
+                Console.WriteLine();
 
                 // Read the API key from the file
                 // encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
-                weatherApiKey = "WeatherApiKey";
-                weatherApiKeyValue = configData[weatherApiKey];
-
-                encoder.Write(weatherApiKey, weatherApiKeyValue);
-
+                encoder.Write(weatherApiKey, configReader.GetAPIKey(weatherApiKey));
 
                 string actualAPIKey = encoder.Read(weatherApiKey);
 

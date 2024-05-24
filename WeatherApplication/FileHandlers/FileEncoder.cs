@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO; // Provides functionalities for file handling.
 using System.Security.Cryptography; // Provides encryption and decryption functionalities.
-using System.Text; // Provides encoding and decoding of strings.
+using System.Text;
 
-namespace WeatherApplication
+namespace WeatherApplication.FileHandlers
 {
     public class FileEncoder
     {
@@ -50,7 +50,7 @@ namespace WeatherApplication
             try
             {
                 // Encrypt the key-value pair.
-                string encryptedPair = EncryptString($"{apiKey}={value}", this.encryptionKey, iv);
+                string encryptedPair = EncryptString($"{apiKey}={value}", encryptionKey, iv);
 
                 // Write the encrypted pair to the file.
                 using (StreamWriter writer = new StreamWriter(filePath, true))
@@ -76,7 +76,7 @@ namespace WeatherApplication
                 foreach (string line in lines)
                 {
                     // Decrypt each line and split into key-value pairs.
-                    string decryptedLine = DecryptString(line, this.encryptionKey, iv);
+                    string decryptedLine = DecryptString(line, encryptionKey, iv);
                     string[] parts = decryptedLine.Split('=');
                     // Return the value if the key matches.
                     if (parts.Length == 2 && parts[0] == apiKey)

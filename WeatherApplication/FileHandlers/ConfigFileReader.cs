@@ -5,24 +5,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeatherApplication
+namespace WeatherApplication.FileHandlers
 {
     internal class ConfigFileReader
     {
         private readonly string filePath;
 
+        private m_APIDictionary<string, string> m_API_Dictionary = new m_APIDictionary<string, string>();
+
+
         public ConfigFileReader(string filePath)
         {
             this.filePath = filePath;
+            // as soon as you create this load the m_API_Dictionary
+            ReadConfig();
         }
 
-        public Dictionary<string, string> ReadConfig()
+        public string GetAPIKey(string apiKey) {
+
+            if (m_API_Dictionary.TryGetValue(apiKey, out string apiValue))
+            {
+                return apiValue;
+            }
+            return null;
+
+        }
+
+
+        public void ReadConfig()
         {
             try
             {
                 // Read all lines from the file
                 string[] lines = File.ReadAllLines(this.filePath);
-                var configKeys = new Dictionary<string, string>();
+                //var configKeys = new Dictionary<string, string>();
 
                 // Process each line
                 foreach (var line in lines)
@@ -32,7 +48,8 @@ namespace WeatherApplication
 
                     if (keyValue.Length == 2)
                     {
-                        configKeys[keyValue[0].Trim()] = keyValue[1].Trim();
+                        //configKeys[keyValue[0].Trim()] = keyValue[1].Trim();
+                        m_API_Dictionary.Add( keyValue[0].Trim(),keyValue[1].Trim());
                     }
                     else
                     {
@@ -40,7 +57,7 @@ namespace WeatherApplication
                     }
                 }
 
-                return configKeys;
+                //return configKeys;
             }
             catch (Exception ex)
             {
