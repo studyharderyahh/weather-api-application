@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="config\weather.cfg" />
+    <None Remove="Config\weatherAppAPIKeys.cfg" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="config\weather.cfg">
+    <Content Include="Config\weatherAppAPIKeys.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="config\hunting_season_data.txt">
+    <None Update="Config\hunting_season_data.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
