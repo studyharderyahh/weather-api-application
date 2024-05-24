@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using WeatherApplication.Controllers;
 using WeatherApplication.FileHandlers;
+using WeatherApplication.Views;
 
 namespace WeatherApplication.ApplicationEntry
 {

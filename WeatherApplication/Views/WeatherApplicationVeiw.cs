@@ -1,9 +1,8 @@
 ﻿using System;
-using WeatherApplication; 
 
-namespace WeatherApplication
+namespace WeatherApplication.Views
 {
-    public class WeatherApplicationView 
+    public class WeatherApplicationView
     {
         // Method to render weather data to the console.(gpt)
         public void Render(WeatherData weatherData)
@@ -42,7 +41,7 @@ namespace WeatherApplication
         }
 
         // Method to render UV data (currently not implemented)(gpt).
-        public void Render (UVModel.UVData uvData)
+        public void Render(UVModel.UVData uvData)
         {
             if (null == uvData)
             {

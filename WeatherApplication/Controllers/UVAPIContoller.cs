@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using WeatherApplication.FileHandlers;
+using WeatherApplication.Views;
 
-namespace WeatherApplication
+namespace WeatherApplication.Controllers
 {
     public class UVController
     {
-        private readonly UVModel                    m_UVModel;
-        private readonly WeatherApplicationView     m_UVView;
-        private UVModel.UVData?                     m_UVData;
+        private readonly UVModel m_UVModel;
+        private readonly WeatherApplicationView m_UVView;
+        private UVModel.UVData? m_UVData;
 
         public UVController(UVModel model, WeatherApplicationView view)
         {

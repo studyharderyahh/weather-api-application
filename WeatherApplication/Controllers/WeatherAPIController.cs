@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks; // For asynchronous programming.
-using WeatherApplication.FileHandlers; // To use components of the WeatherApplication namespace.
+using WeatherApplication.FileHandlers;
+using WeatherApplication.Views; // To use components of the WeatherApplication namespace.
 
-namespace WeatherApplication
+namespace WeatherApplication.Controllers
 {
     public class WeatherAPIController
     {
         private readonly WeatherApplicationView m_weatherView; // Reference to the view.
-        private readonly WeatherModel           m_weatherModel; // Reference to the model.
-        private WeatherData?                    m_weatherData; // Holds the latest weather data.
+        private readonly WeatherModel m_weatherModel; // Reference to the model.
+        private WeatherData? m_weatherData; // Holds the latest weather data.
         public WeatherAPIController(WeatherModel model, WeatherApplicationView view)
         {
             // Ensure the model and view are not null.

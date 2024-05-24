@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WeatherApplication.FileHandlers;
+using WeatherApplication.Views;
 
-namespace WeatherApplication
+namespace WeatherApplication.Controllers
 {
     public class TidesController
     {
         private readonly TidesModel m_tidesModel;
-        private readonly TidesView  m_tidesView;
+        private readonly TidesView m_tidesView;
         private TidesModel.TidesData? m_tidesData;
 
         public TidesController(TidesModel model, TidesView view)
