@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WeatherApplication
+namespace WeatherApplication.Views
 {
     public class HuntingView
     {

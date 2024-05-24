@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeatherApplication
+namespace WeatherApplication.Views
 {
     public class TidesView
     {

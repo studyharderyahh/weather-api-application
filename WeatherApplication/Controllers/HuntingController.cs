@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace WeatherApplication
+namespace WeatherApplication.Controllers
 {
     public class HuntingController
     {
