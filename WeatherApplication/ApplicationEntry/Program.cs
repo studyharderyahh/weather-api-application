@@ -12,19 +12,18 @@ namespace WeatherApplication.ApplicationEntry
         static async Task Main(string[] args)
         {
 
-
             try
             {
                 // Get an instance of FileEncoder for handling file operations
                 FileEncoder encoder = FileEncoder.GetInstance("security.sys");
                 string weatherApiKey = "WeatherApiKey";
+                string tideApiKey = "TideApiKey";
                 ConfigFileReader configReader = null;
 
                 try
                 {
                     // Specify the file path
                     string filePath = "Config/weatherAppAPIKeys.cfg";
-
 
                     // Check if the file exists
                     if (!File.Exists(filePath))
@@ -49,26 +48,26 @@ namespace WeatherApplication.ApplicationEntry
                 // encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
                 encoder.Write(weatherApiKey, configReader.GetAPIKey(weatherApiKey));
 
-                string actualAPIKey = encoder.Read(weatherApiKey);
+                string actualWeatherAPIKey = encoder.Read(weatherApiKey);
 
                 // If API key is not found in the file, prompt the user to input it
-                if (string.IsNullOrEmpty(actualAPIKey))
+                if (string.IsNullOrEmpty(actualWeatherAPIKey))
                 {
                     Console.Write("Enter Weather API key: ");
-                    actualAPIKey = Console.ReadLine();
+                    actualWeatherAPIKey = Console.ReadLine();
 
                     // Write the API key to the file
-                    encoder.Write("ApiKey", actualAPIKey);
+                    encoder.Write("ApiKey", actualWeatherAPIKey);
                 }
 
-                if (string.IsNullOrWhiteSpace(actualAPIKey))
+                if (string.IsNullOrWhiteSpace(actualWeatherAPIKey))
                 {
                     Console.WriteLine("Register for an API key at https://developer.niwa.co.nz");
                     return;
                 }
 
                 // Create an instance of WeatherServiceModel with the API key
-                WeatherModel weatherService = new WeatherModel(actualAPIKey);
+                WeatherModel weatherService = new WeatherModel(actualWeatherAPIKey);
 
                 // Create an instance of WeatherAPIView
                 WeatherApplicationView view = new WeatherApplicationView();
@@ -80,7 +79,7 @@ namespace WeatherApplication.ApplicationEntry
                 string cityName = "Pokeno";
 
                 // Retrieve weather data and render the view
-                await controller.RefreshWeatherData(actualAPIKey, cityName);
+                await controller.RefreshWeatherData(actualWeatherAPIKey, cityName);
                 controller.RefreshPanelView();
                 //Run through to tidal information
                 double lat = -37.406;
@@ -91,7 +90,9 @@ namespace WeatherApplication.ApplicationEntry
 
                 DateTime currentDate = startDate;
 
-                actualAPIKey = "VtqRNuV5F79dsA8nPGCBhHaCeEJbocPd";
+                // Remove later --- this is the tideAPIKey
+                // actualAPIKey = "VtqRNuV5F79dsA8nPGCBhHaCeEJbocPd";
+                string actualTideAPIKey = configReader.GetAPIKey(tideApiKey);
 
                 while (currentDate <= endDate)
                 {
@@ -104,7 +105,7 @@ namespace WeatherApplication.ApplicationEntry
                     int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                     string dateString = currentDate.ToString("yyyy-MM-dd");
 
-                    string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={actualAPIKey}&startDate={dateString}";
+                    string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={actualTideAPIKey}&startDate={dateString}";
 
                     using (HttpClient client = new HttpClient())
                     {
@@ -131,7 +132,6 @@ namespace WeatherApplication.ApplicationEntry
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
-
 
 
         }
