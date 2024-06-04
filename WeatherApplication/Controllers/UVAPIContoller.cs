@@ -36,7 +36,7 @@ namespace WeatherApplication.Controllers
             }
         }
 
-        public class UVServiceException : Exception
+        public class UVServiceException : Exception //inherits it to other controllers 
         {
             public UVServiceException() { }
             public UVServiceException(string message) : base(message) { }
