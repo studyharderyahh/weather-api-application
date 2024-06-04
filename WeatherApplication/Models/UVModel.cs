@@ -44,6 +44,7 @@ namespace WeatherApplication
             public double Value { get; set; }
         }
 
+        // Constructor to check if APIKey is null
         public UVModel(string apiKey, CoordInfo inputCoord)
         {
             m_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));

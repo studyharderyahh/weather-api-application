@@ -14,9 +14,9 @@ namespace WeatherApplication.Views
             }
             else
             {
-                // Display weather data details.(gpt)
+                // Display weather data details.
                 Console.WriteLine($"Weather for {weatherData.Name}:");
-                // Safe navigation with null-conditional operators.(gpt)
+                // Safe navigation with null-conditional operators.
                 Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}");
                 Console.WriteLine($"Coordinates: Lon: {weatherData.Coord?.Lon}, Lat: {weatherData.Coord?.Lat}"); // Added null-conditional operator
                 Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}"); // Added null-conditional operator
@@ -40,7 +40,7 @@ namespace WeatherApplication.Views
             }
         }
 
-        // Method to render UV data (currently not implemented)(gpt).
+        // Method to render UV data (currently not implemented).
         public void Render(UVModel.UVData uvData)
         {
             if (null == uvData)
@@ -49,11 +49,11 @@ namespace WeatherApplication.Views
             }
             else
             {
-                // Add UV data rendering logic here.(gpt)
+                // Add UV data rendering logic here.
             }
         }
 
-        // Helper method to convert Unix timestamp to DateTime.(gpt)
+        // Helper method to convert Unix timestamp to DateTime.
         private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;

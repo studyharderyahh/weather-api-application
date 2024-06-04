@@ -18,23 +18,26 @@ namespace WeatherApplication.ApplicationEntry
                 FileEncoder encoder = FileEncoder.GetInstance("security.sys");
                 string weatherApiKey = "WeatherApiKey";
                 string tideApiKey = "TideApiKey";
-                ConfigFileReader configReader = null;
+                string filePath = "Config/weatherAppAPIKeys.cfg";
 
+                // Added proper null checking before the initialization
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    throw new ArgumentNullException(nameof(filePath), "File path cannot be null or empty.");
+                }
+
+                ConfigFileReader configReader = new ConfigFileReader(filePath);
+     
                 try
                 {
-                    // Specify the file path
-                    string filePath = "Config/weatherAppAPIKeys.cfg";
-
                     // Check if the file exists
                     if (!File.Exists(filePath))
                     {
                         Console.WriteLine($"The file '{filePath}' does not exist.");
                         return;
                     }
-
                     // Create an instance of configReader
-                    configReader  = new ConfigFileReader(filePath);
-
+                    
                 }
                 catch (Exception ex)
                 {
@@ -133,6 +136,15 @@ namespace WeatherApplication.ApplicationEntry
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
 
+            // Below are the usage for hunting 
+
+            string HuntingfilePath = "Config/hunting_season_data.txt";
+
+            var huntingModel = new HuntingModel();
+            var huntingView = new HuntingView();
+            var huntingController = new HuntingController(huntingModel, huntingView);
+
+            huntingController.LoadAndDisplayHuntingSeasonData(filePath);
 
         }
     }
