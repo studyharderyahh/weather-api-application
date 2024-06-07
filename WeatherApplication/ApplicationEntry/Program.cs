@@ -138,12 +138,14 @@ namespace WeatherApplication.ApplicationEntry
 
             // Below are the usage for hunting 
 
-            string HuntingfilePath = "Config/hunting_season_data.txt";
+            string HuntingfilePath = "Config/hunting_season_data.txt";// Replace with your actual file path
 
+            // Initialize the model, view, and controller
             var huntingModel = new HuntingModel();
             var huntingView = new HuntingView();
             var huntingController = new HuntingController(huntingModel, huntingView);
 
+            // Load and display hunting season data
             huntingController.LoadAndDisplayHuntingSeasonData(filePath);
 
         }

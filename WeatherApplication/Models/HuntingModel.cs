@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WeatherApplication
 {
@@ -29,6 +30,7 @@ namespace WeatherApplication
             }
         }
 
+        // Parses the hunting season data from a file and returns a list of HuntingSeason objects
         public static List<HuntingSeason> ParseHuntingSeasonData(string filePath)
         {
             var huntingSeasons = new List<HuntingSeason>();
@@ -53,6 +55,7 @@ namespace WeatherApplication
                 DateTime? startDate = null;
                 DateTime? endDate = null;
 
+                // Parse start and end dates from the huntingDates string
                 var dates = huntingDates.Split(new[] { " to ", " through ", " (", ")" }, StringSplitOptions.RemoveEmptyEntries);
                 if (dates.Length == 2)
                 {
