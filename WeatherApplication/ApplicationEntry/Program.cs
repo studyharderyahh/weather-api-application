@@ -146,7 +146,7 @@ namespace WeatherApplication.ApplicationEntry
             var huntingController = new HuntingController(huntingModel, huntingView);
 
             // Load and display hunting season data
-            huntingController.LoadAndDisplayHuntingSeasonData(filePath);
+            huntingController.LoadAndDisplayHuntingSeasonData(HuntingfilePath);
 
         }
     }
