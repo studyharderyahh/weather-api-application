@@ -7,11 +7,8 @@ namespace WeatherApplication.FileHandlers
 {
     public class FileEncoder
     {
-        
-        // Lock object for thread safety.
-        private static readonly object lockObject = new object();
-        // Singleton instance of FileEncoder.
-        private static FileEncoder instance;
+        // Lazy initialization of the singleton instance
+        private static Lazy<FileEncoder> lazyInstance;
         // File path to store encrypted data.
         private readonly string filePath;
         // Encryption key (base64 string).
@@ -19,8 +16,6 @@ namespace WeatherApplication.FileHandlers
         // Initialization vector for encryption.
         private readonly byte[] iv;
 
-
-        // Private constructor to enforce singleton pattern.
         private FileEncoder(string filePath)
         {
             this.filePath = filePath;
@@ -29,23 +24,31 @@ namespace WeatherApplication.FileHandlers
                 iv = aes.IV;
             }
         }
-
-        // GetInstance method to return the singleton instance.
-        public static FileEncoder GetInstance(string filePath)
+        // Static method to initialize the singleton instance with a file path
+        public static void Initialize(string path)
         {
-            if (instance == null)
+            if (lazyInstance == null)
             {
-                lock (lockObject)
-                {
-                    if (instance == null)
-                    {
-                        instance = new FileEncoder(filePath);
-                    }
-                }
+                lazyInstance = new Lazy<FileEncoder>(() => new FileEncoder(path));
             }
-            return instance;
+            else
+            {
+                throw new InvalidOperationException("FileEncoder has already been initialized.");
+            }
         }
 
+        // Property to get the singleton instance
+        public static FileEncoder Instance
+        {
+            get
+            {
+                if (lazyInstance == null)
+                {
+                    throw new InvalidOperationException("FileEncoder is not initialized. Call Initialize() first.");
+                }
+                return lazyInstance.Value;
+            }
+        }
 
         // Method to write encrypted key-value pairs to file.
         public void Write(string apiKey, string value)
