@@ -31,9 +31,9 @@ namespace WeatherApplication.Views
                 Console.WriteLine($"Wind Speed: {weatherData.Wind?.Speed}m/s"); // Added null-conditional operator
                 Console.WriteLine($"Wind Degree: {weatherData.Wind?.Deg}°"); // Added null-conditional operator
                 Console.WriteLine($"Cloudiness: {weatherData.Clouds?.All}%"); // Added null-conditional operator
-                Console.WriteLine($"Date and Time: {UnixTimeStampToDateTime(weatherData.Dt)}"); // Convert UNIX timestamp to DateTime
+                Console.WriteLine($"Date and Time (UTC): {UnixTimeStampToDateTime(weatherData.Dt)}"); // Convert UNIX timestamp to DateTime
                 Console.WriteLine($"Sys Info: Type: {weatherData.Sys?.Type}, ID: {weatherData.Sys?.Id}, Country: {weatherData.Sys?.Country}, Sunrise: {UnixTimeStampToDateTime(weatherData.Sys.Sunrise)}, Sunset: {UnixTimeStampToDateTime(weatherData.Sys.Sunset)}"); // Added null-conditional operator and converted UNIX timestamps
-                Console.WriteLine($"Timezone: {weatherData.Timezone}");
+                Console.WriteLine($"Timezone Offset (Sec): {weatherData.Timezone}");
                 Console.WriteLine($"City ID: {weatherData.Id}");
                 Console.WriteLine($"City Name: {weatherData.Name}");
                 Console.WriteLine($"Cod: {weatherData.Cod}");
@@ -65,7 +65,7 @@ namespace WeatherApplication.Views
         }
 
             // Helper method to convert Unix timestamp to DateTime.
-            private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;
         }

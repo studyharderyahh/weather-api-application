@@ -14,29 +14,33 @@ namespace WeatherApplication.ApplicationEntry
 
             try
             {
-                // Get an instance of FileEncoder for handling file operations
-                FileEncoder encoder = FileEncoder.GetInstance("security.sys");
+                // Initialize with the file path
+                FileEncoder.Initialize("security.sys");
+
+                // Get the singleton instance
+                FileEncoder encoder = FileEncoder.Instance;
+                string apiKeyFilePath = "Config/weatherAppAPIKeys.cfg";
+
                 string weatherApiKey = "WeatherApiKey";
                 string tideApiKey = "TideApiKey";
-                string filePath = "Config/weatherAppAPIKeys.cfg";
+                
 
                 // Added proper null checking before the initialization
-                if (string.IsNullOrEmpty(filePath))
+                if (string.IsNullOrEmpty(apiKeyFilePath))
                 {
-                    throw new ArgumentNullException(nameof(filePath), "File path cannot be null or empty.");
+                    throw new ArgumentNullException(nameof(apiKeyFilePath), "File path cannot be null or empty.");
                 }
 
-                ConfigFileReader configReader = new ConfigFileReader(filePath);
+                ConfigFileReader configReader = new ConfigFileReader(apiKeyFilePath);
      
                 try
                 {
                     // Check if the file exists
-                    if (!File.Exists(filePath))
+                    if (!File.Exists(apiKeyFilePath))
                     {
-                        Console.WriteLine($"The file '{filePath}' does not exist.");
+                        Console.WriteLine($"The file '{apiKeyFilePath}' does not exist.");
                         return;
                     }
-                    // Create an instance of configReader
                     
                 }
                 catch (Exception ex)
@@ -79,7 +83,7 @@ namespace WeatherApplication.ApplicationEntry
                 WeatherAPIController controller = new WeatherAPIController(weatherService, view);
 
                 // Specify the city name for which you want to retrieve weather data
-                string cityName = "Pokeno";
+                string cityName = "Chennai";
 
                 // Retrieve weather data and render the view
                 await controller.RefreshWeatherData(actualWeatherAPIKey, cityName);
