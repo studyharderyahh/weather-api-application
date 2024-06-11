@@ -40,21 +40,32 @@ namespace WeatherApplication.Views
             }
         }
 
-        // Method to render UV data (currently not implemented).
+        // Renders the UV data to the console
         public void Render(UVModel.UVData uvData)
         {
-            if (null == uvData)
+            if (uvData == null)
             {
-                Console.WriteLine("UV data is null.");
+                Console.WriteLine("No UV data available to display.");
+                return;
             }
-            else
+
+            Console.WriteLine($"Coordinates: {uvData.Coord}");
+            Console.WriteLine("UV Products:");
+
+            foreach (var product in uvData.Products)
             {
-                // Add UV data rendering logic here.
+                Console.WriteLine($"\nProduct: {product.Name}");
+                Console.WriteLine("Time\t\t\tUV Value");
+
+                foreach (var value in product.Values)
+                {
+                    Console.WriteLine($"{value.Time:yyyy-MM-dd HH:mm}\t{value.Value}");
+                }
             }
         }
 
-        // Helper method to convert Unix timestamp to DateTime.
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+            // Helper method to convert Unix timestamp to DateTime.
+            private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;
         }
