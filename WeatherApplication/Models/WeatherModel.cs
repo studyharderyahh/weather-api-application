@@ -31,6 +31,7 @@ namespace WeatherApplication
                 string url = $"https://api.openweathermap.org/data/2.5/weather?q={encodedCityName}&appid={encodedApiKey}&units=metric";
                 HttpResponseMessage response = await m_httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
+
                 string json = await response.Content.ReadAsStringAsync();
                 WeatherDataDeserializer deserializer = new WeatherDataDeserializer();
                 WeatherData weatherData = deserializer.DeserializeWeatherData(json) ?? throw new Exception("Weather data deserialization failed.");

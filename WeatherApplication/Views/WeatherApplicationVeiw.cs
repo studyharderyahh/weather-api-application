@@ -40,7 +40,7 @@ namespace WeatherApplication.Views
             }
         }
 
-        // Renders the UV data to the console
+       /* // Renders the UV data to the console
         public void Render(UVModel.UVData uvData)
         {
             if (uvData == null)
@@ -62,7 +62,7 @@ namespace WeatherApplication.Views
                     Console.WriteLine($"{value.Time:yyyy-MM-dd HH:mm}\t{value.Value}");
                 }
             }
-        }
+        } */
 
             // Helper method to convert Unix timestamp to DateTime.
         private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
