@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using WeatherApplication.Controllers;
+﻿using WeatherApplication.Controllers;
 using WeatherApplication.FileHandlers;
 using WeatherApplication.Views;
+using Microsoft.Extensions.DependencyInjection;
+using WeatherApplication.Services;
+
 
 namespace WeatherApplication.ApplicationEntry
 {
@@ -77,23 +77,36 @@ namespace WeatherApplication.ApplicationEntry
                 WeatherModel weatherService = new WeatherModel(actualWeatherAPIKey);
 
                 // Create an instance of WeatherAPIView
-                WeatherApplicationView view = new WeatherApplicationView();
+                WeatherApplicationView weatherView = new WeatherApplicationView();
 
                 // Instantiate the controller with the view and model
-                WeatherAPIController controller = new WeatherAPIController(weatherService, view);
+                WeatherAPIController weatherController = new WeatherAPIController(weatherService, weatherView);
+
+
+                Console.WriteLine("\n-----------------------------");
+                Console.WriteLine("   Open Weather API Data: ");
+                Console.WriteLine("-----------------------------\n");
 
                 // Specify the city name for which you want to retrieve weather data
-                string cityName = "Chennai";
+                string cityName = "Takanini";
+
+                Console.WriteLine("Enter the City Name (default Takanini): ");
+                var cityNameInput = Console.ReadLine();
+                if (!string.IsNullOrEmpty(cityNameInput))
+                {
+                    cityName = cityNameInput;
+                }
 
                 // Retrieve weather data and render the view
-                await controller.RefreshWeatherData(actualWeatherAPIKey, cityName);
-                controller.RefreshPanelView();
+                await weatherController.RefreshWeatherData(actualWeatherAPIKey, cityName);
+                weatherController.RefreshPanelView();
 
-                Console.WriteLine("\nTide API Data: ");
-                Console.WriteLine("--------------------");
+                Console.WriteLine("\n-----------------------------");
+                Console.WriteLine("   NIWA - TIDE API Data: ");
+                Console.WriteLine("-----------------------------\n");
                 //Run through to tidal information
-                double lat = -37.406;
-                double lon = 175.947;
+                double tideLat = -37.406;
+                double tideLon = 175.947;
 
                 DateTime startDate = new DateTime(2023, 01, 01);
                 DateTime endDate = new DateTime(2023, 12, 31);
@@ -115,7 +128,7 @@ namespace WeatherApplication.ApplicationEntry
                     int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                     string dateString = currentDate.ToString("yyyy-MM-dd");
 
-                    string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={actualTideAPIKey}&startDate={dateString}";
+                    string url = $"https://api.niwa.co.nz/tides/data?lat={tideLat}&long={tideLon}&datum=MSL&numberOfDays={numberOfDays}&apikey={actualTideAPIKey}&startDate={dateString}";
 
                     using (HttpClient client = new HttpClient())
                     {
@@ -154,6 +167,48 @@ namespace WeatherApplication.ApplicationEntry
 
             // Load and display hunting season data
             huntingController.LoadAndDisplayHuntingSeasonData(HuntingfilePath);
+
+
+            // UV Index API
+            // Setup Dependency Injection
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<UVService>()
+                .AddSingleton<UVController>()
+                .AddSingleton<UVView>()
+                .BuildServiceProvider();
+
+            // Get services
+            var uvController = serviceProvider.GetService<UVController>();
+            var uvView = serviceProvider.GetService<UVView>();
+
+            // Get latitude and longitude from user input or use default values
+            double uvLat = -39.0;
+            double uvLong = 174.0;
+
+            Console.WriteLine("\n-----------------------------");
+            Console.WriteLine("   NIWA - UV Index API Data: ");
+            Console.WriteLine("-----------------------------\n");
+
+            Console.WriteLine("Enter latitude (default -39.0): ");
+            var latInput = Console.ReadLine();
+            if (!string.IsNullOrEmpty(latInput) && double.TryParse(latInput, out var lat))
+            {
+                uvLat = lat;
+            }
+
+            Console.WriteLine("Enter longitude (default 174.0): ");
+            var longInput = Console.ReadLine();
+            if (!string.IsNullOrEmpty(longInput) && double.TryParse(longInput, out var lon))
+            {
+                uvLong = lon;
+            }
+
+            // Get UV data
+            var uvModel = await uvController.GetUVDataAsync(uvLat, uvLong);
+
+            // Display data
+            uvView.DisplayUVData(uvModel);
+
 
         }
     }
