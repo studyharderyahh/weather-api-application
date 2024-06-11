@@ -11,8 +11,9 @@ namespace WeatherApplication
 {
     public class UVModel
     {
-        private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance;
-        private string m_apiKey;
+        private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance; // only need one browser // Singleton instance of HttpClientWrapper
+
+        private string m_apiKey; // API key for authentication
 
         public string Coord { get; set; }
 
