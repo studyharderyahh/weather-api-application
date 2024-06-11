@@ -14,9 +14,9 @@ namespace WeatherApplication.Views
             }
             else
             {
-                // Display weather data details.(gpt)
+                // Display weather data details.
                 Console.WriteLine($"Weather for {weatherData.Name}:");
-                // Safe navigation with null-conditional operators.(gpt)
+                // Safe navigation with null-conditional operators.
                 Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}");
                 Console.WriteLine($"Coordinates: Lon: {weatherData.Coord?.Lon}, Lat: {weatherData.Coord?.Lat}"); // Added null-conditional operator
                 Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}"); // Added null-conditional operator
@@ -40,21 +40,32 @@ namespace WeatherApplication.Views
             }
         }
 
-        // Method to render UV data (currently not implemented)(gpt).
+        // Renders the UV data to the console
         public void Render(UVModel.UVData uvData)
         {
-            if (null == uvData)
+            if (uvData == null)
             {
-                Console.WriteLine("UV data is null.");
+                Console.WriteLine("No UV data available to display.");
+                return;
             }
-            else
+
+            Console.WriteLine($"Coordinates: {uvData.Coord}");
+            Console.WriteLine("UV Products:");
+
+            foreach (var product in uvData.Products)
             {
-                // Add UV data rendering logic here.(gpt)
+                Console.WriteLine($"\nProduct: {product.Name}");
+                Console.WriteLine("Time\t\t\tUV Value");
+
+                foreach (var value in product.Values)
+                {
+                    Console.WriteLine($"{value.Time:yyyy-MM-dd HH:mm}\t{value.Value}");
+                }
             }
         }
 
-        // Helper method to convert Unix timestamp to DateTime.(gpt)
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+            // Helper method to convert Unix timestamp to DateTime.
+            private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;
         }

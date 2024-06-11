@@ -5,6 +5,7 @@ namespace WeatherApplication.Views
 {
     public class HuntingView
     {
+        // Renders the hunting season data to the console
         public void Render(List<HuntingModel.HuntingSeason> seasons)
         {
             Console.WriteLine("Hunting Season Data:");

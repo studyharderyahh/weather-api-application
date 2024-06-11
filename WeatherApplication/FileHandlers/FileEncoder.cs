@@ -7,6 +7,7 @@ namespace WeatherApplication.FileHandlers
 {
     public class FileEncoder
     {
+        
         // Lock object for thread safety.
         private static readonly object lockObject = new object();
         // Singleton instance of FileEncoder.
@@ -17,6 +18,7 @@ namespace WeatherApplication.FileHandlers
         private readonly byte[] encryptionKey = Convert.FromBase64String("C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=");
         // Initialization vector for encryption.
         private readonly byte[] iv;
+
 
         // Private constructor to enforce singleton pattern.
         private FileEncoder(string filePath)
@@ -43,6 +45,7 @@ namespace WeatherApplication.FileHandlers
             }
             return instance;
         }
+
 
         // Method to write encrypted key-value pairs to file.
         public void Write(string apiKey, string value)
