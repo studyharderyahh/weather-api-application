@@ -88,6 +88,9 @@ namespace WeatherApplication.ApplicationEntry
                 // Retrieve weather data and render the view
                 await controller.RefreshWeatherData(actualWeatherAPIKey, cityName);
                 controller.RefreshPanelView();
+
+                Console.WriteLine("\nTide API Data: ");
+                Console.WriteLine("--------------------");
                 //Run through to tidal information
                 double lat = -37.406;
                 double lon = 175.947;

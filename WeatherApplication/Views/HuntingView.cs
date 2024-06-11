@@ -8,7 +8,7 @@ namespace WeatherApplication.Views
         // Renders the hunting season data to the console
         public void Render(List<HuntingModel.HuntingSeason> seasons)
         {
-            Console.WriteLine("Hunting Season Data:");
+            Console.WriteLine("\nHunting Season Data:");
             Console.WriteLine("--------------------");
             foreach (var season in seasons)
             {
