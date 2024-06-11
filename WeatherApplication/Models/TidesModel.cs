@@ -69,7 +69,7 @@ namespace WeatherApplication
                 string year = currentDate.Year.ToString();
                 string month = currentDate.Month.ToString("D2");
                 string filename = $"tides_{year}_{month}.json";
-                resultMessage += $"Downloading {currentDate:MMM} {year}\n";
+                resultMessage += $"Downloading {currentDate:MMM} {year} into {filename}\n";
 
                 // Calculate the number of days in the current month
                 int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);

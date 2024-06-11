@@ -82,7 +82,6 @@ namespace WeatherApplication.ApplicationEntry
                 // Instantiate the controller with the view and model
                 WeatherAPIController weatherController = new WeatherAPIController(weatherService, weatherView);
 
-
                 Console.WriteLine("\n-----------------------------");
                 Console.WriteLine("   Open Weather API Data: ");
                 Console.WriteLine("-----------------------------\n");
@@ -122,7 +121,7 @@ namespace WeatherApplication.ApplicationEntry
                     string year = currentDate.Year.ToString();
                     string month = currentDate.Month.ToString("D2");
                     string filename = $"tides_{year}_{month}.json";
-                    Console.WriteLine($"Downloading {currentDate:MMM} {year}");
+                    Console.WriteLine($"Downloading {currentDate:MMM} {year} into {filename}");
 
                     // Calculate the number of days in the current month
                     int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
@@ -158,8 +157,7 @@ namespace WeatherApplication.ApplicationEntry
 
             // Below are the usage for hunting 
 
-            string HuntingfilePath = "Config/hunting_season_data.txt";// Replace with your actual file path
-
+            string HuntingfilePath = "Config/hunting_season_data.txt";
             // Initialize the model, view, and controller
             var huntingModel = new HuntingModel();
             var huntingView = new HuntingView();
@@ -208,7 +206,6 @@ namespace WeatherApplication.ApplicationEntry
 
             // Display data
             uvView.DisplayUVData(uvModel);
-
 
         }
     }
