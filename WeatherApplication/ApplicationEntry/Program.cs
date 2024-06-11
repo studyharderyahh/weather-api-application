@@ -11,28 +11,26 @@ namespace WeatherApplication.ApplicationEntry
     {
         static async Task Main(string[] args)
         {
+            
+            // Initialize with the file path
+            FileEncoder.Initialize("security.sys");
+
+            // Get the singleton instance
+            FileEncoder encoder = FileEncoder.Instance;
+            string apiKeyFilePath = "Config/weatherAppAPIKeys.cfg";
+            ConfigFileReader configReader = new ConfigFileReader(apiKeyFilePath);
+            string weatherApiKey = "WeatherApiKey";
+            string tideApiKey = "TideApiKey";
+            string solarFlareApiKey = "SolarFlareApiKey";
 
             try
             {
-                // Initialize with the file path
-                FileEncoder.Initialize("security.sys");
-
-                // Get the singleton instance
-                FileEncoder encoder = FileEncoder.Instance;
-                string apiKeyFilePath = "Config/weatherAppAPIKeys.cfg";
-
-                string weatherApiKey = "WeatherApiKey";
-                string tideApiKey = "TideApiKey";
-                
-
                 // Added proper null checking before the initialization
                 if (string.IsNullOrEmpty(apiKeyFilePath))
                 {
                     throw new ArgumentNullException(nameof(apiKeyFilePath), "File path cannot be null or empty.");
                 }
 
-                ConfigFileReader configReader = new ConfigFileReader(apiKeyFilePath);
-     
                 try
                 {
                     // Check if the file exists
@@ -169,15 +167,15 @@ namespace WeatherApplication.ApplicationEntry
 
             // UV Index API
             // Setup Dependency Injection
-            var serviceProvider = new ServiceCollection()
+            var uvServiceProvider = new ServiceCollection()
                 .AddSingleton<UVService>()
                 .AddSingleton<UVController>()
                 .AddSingleton<UVView>()
                 .BuildServiceProvider();
 
             // Get services
-            var uvController = serviceProvider.GetService<UVController>();
-            var uvView = serviceProvider.GetService<UVView>();
+            var uvController = uvServiceProvider.GetService<UVController>();
+            var uvView = uvServiceProvider.GetService<UVView>();
 
             // Get latitude and longitude from user input or use default values
             double uvLat = -39.0;
@@ -206,6 +204,28 @@ namespace WeatherApplication.ApplicationEntry
 
             // Display data
             uvView.DisplayUVData(uvModel);
+
+
+            Console.WriteLine("\n-----------------------------------------");
+            Console.WriteLine("   NASA - Solar Flare Index API Data: ");
+            Console.WriteLine("-----------------------------------------\n");
+
+            // Setup DI
+            var solarFlareServiceProvider = new ServiceCollection()
+                    .AddSingleton<SolarFlareService>()
+                    .AddSingleton<SolarFlareController>()
+                    .AddSingleton<SolarFlareView>()
+                    .BuildServiceProvider();
+
+                // Get services
+                var solarFlarecontroller = solarFlareServiceProvider.GetService<SolarFlareController>();
+
+                // Specify the query parameters
+                string solarFlareStartDate = "2024-05-01";
+                string solarFlareEndDate = "2024-05-02";
+
+                // Fetch and display solar flares data
+                await solarFlarecontroller.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, configReader.GetAPIKey(solarFlareApiKey));
 
         }
     }
