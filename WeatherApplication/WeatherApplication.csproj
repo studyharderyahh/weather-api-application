@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <None Remove="C:\Users\a2597\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
-    <None Remove="Config\weatherAppAPIKeys.cfg" />
+    <None Remove="Config\weatherAppConfigFile.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Config\weatherAppAPIKeys.cfg">
+    <Content Include="Config\weatherAppConfigFile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

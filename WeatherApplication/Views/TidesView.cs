@@ -22,10 +22,16 @@ namespace WeatherApplication.Views
             Console.WriteLine($"Height: {tideData.Metadata.Height}");
 
             // Render tide values
+            int ctr = 0;
             Console.WriteLine("\nTide Values:");
             foreach (var value in tideData.Values)
             {
-                Console.WriteLine($"Time: {value.Time}, Value: {value.Value}");
+                if ( ctr < 10 )
+                {
+                    Console.WriteLine($"Time: {value.Time}, Value: {value.Value}");
+                    ctr++; 
+                }
+                
             }
         }
     }

@@ -21,34 +21,36 @@ namespace WeatherApplication.ApplicationEntry
             FileEncoder encoder = FileEncoder.Instance;
 
             // Define the file path for API keys configuration file
-            string apiKeyFilePath = "Config/weatherAppAPIKeys.cfg";
+            string weatherAppConfigFile = "Config/weatherAppConfigFile.json";
 
-            logger.LogInfo($"Reading config file: {apiKeyFilePath}");
+            logger.LogInfo($"Reading config file: {weatherAppConfigFile}");
 
             // Define keys for accessing different APIs
             string weatherApiKey = "WeatherApiKey";
             string tideApiKey = "TideApiKey";
+            //string uvApiKey = "";
+            //string solarFlareApiKey = "";
 
 
 
             // Check if the API key configuration file exists
-            if (!File.Exists(apiKeyFilePath))
+            if (!File.Exists(weatherAppConfigFile))
             {
-                logger.LogError($"The file '{apiKeyFilePath}' does not exist.");
-                Console.WriteLine($"The file '{apiKeyFilePath}' does not exist.");
+                logger.LogError($"The file '{weatherAppConfigFile}' does not exist.");
+                Console.WriteLine($"The file '{weatherAppConfigFile}' does not exist.");
                 // Exit if the file does not exist
                 return;
             }
             try
             {
                 // Create an instance of ConfigFileReader to read API keys from the config file
-                ConfigFileReader configReader = new ConfigFileReader(apiKeyFilePath);
+                ConfigFileReader configReader = new ConfigFileReader(weatherAppConfigFile);
 
-                logger.LogInfo($"Application Name: {configReader.GetAPIKey("appName")}");
-                Console.WriteLine(configReader.GetAPIKey("appName"));
+                logger.LogInfo($"Application Name: {configReader.GetKeyValue("appName")}");
+                Console.WriteLine(configReader.GetKeyValue("appName"));
 
                 // Write the Weather API key to the encoder and read it back
-                encoder.Write(weatherApiKey, configReader.GetAPIKey(weatherApiKey));
+                encoder.Write(weatherApiKey, configReader.GetKeyValue(weatherApiKey));
 
                 // Read the API key from the file
                 // encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
@@ -77,7 +79,7 @@ namespace WeatherApplication.ApplicationEntry
                 // Display tide data using the Tide API key
                 // Remove later --- this is the tideAPIKey
                 // actualAPIKey = "VtqRNuV5F79dsA8nPGCBhHaCeEJbocPd";
-                await DownloadTideData(configReader.GetAPIKey(tideApiKey));
+                await DownloadTideData(configReader.GetKeyValue(tideApiKey));
 
                 // Load and display hunting season data
                 DisplayHuntingSeasonData();
@@ -139,6 +141,11 @@ namespace WeatherApplication.ApplicationEntry
             Console.WriteLine("\n-----------------------------");
             Console.WriteLine("   NIWA - TIDE API Data ");
             Console.WriteLine("-----------------------------\n");
+            
+            // Create instances of the weather model, view, and controller
+            var tidesService = new TidesModel();
+            var tidesView = new TidesView();
+            var tidesController = new TidesController(tidesService, tidesView);
 
             // Define the latitude, longitude, start and end dates for the tide data request
             double tideLat = -37.406;
@@ -147,6 +154,10 @@ namespace WeatherApplication.ApplicationEntry
             DateTime tideEndDate = new DateTime(2023, 12, 31);
             DateTime currentDate = tideStartDate;
 
+            // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
+            await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate);
+
+            /*
             // Loop through each month in the date range to download tide data
             while (currentDate <= tideEndDate)
             {
@@ -178,7 +189,7 @@ namespace WeatherApplication.ApplicationEntry
                 }
 
                 currentDate = currentDate.AddMonths(1); // Move to the next month
-            }
+            } */
 
             Console.WriteLine("Done");
 
@@ -275,7 +286,7 @@ namespace WeatherApplication.ApplicationEntry
 
 
             // Retrieve and display solar flare data for the specified date range
-            await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, configReader.GetAPIKey("SolarFlareApiKey"));
+            await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, configReader.GetKeyValue("SolarFlareApiKey"));
 
            
         }

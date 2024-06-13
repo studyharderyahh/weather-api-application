@@ -11,6 +11,9 @@ namespace WeatherApplication
 {
     public class TidesModel
     {
+
+        private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance;
+
         // Nested class to represent tides data structure
         public class TidesData
         {
@@ -58,7 +61,7 @@ namespace WeatherApplication
                 },
                 Values = new List<TideValue>()  // Initialize empty list of tide values
             
-        };
+            };
             // Iterate through each month to fetch tides data
             DateTime currentDate = startDate;
             string resultMessage = "";
@@ -76,25 +79,22 @@ namespace WeatherApplication
                 string dateString = currentDate.ToString("yyyy-MM-dd");
                 // Construct URL for API request
                 string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
-
-                using (HttpClientWrapper client = HttpClientWrapper.Instance)
+                                
+                try
                 {
-                    try
-                    {
-                        HttpResponseMessage response = await client.GetAsync(url);
-                        response.EnsureSuccessStatusCode();
-
-                        string result = await response.Content.ReadAsStringAsync();
-                        File.WriteAllText(filename, result);
-
-                        // Deserialize the JSON data and add it to the Values list
-                        TidesData monthlyData = JsonConvert.DeserializeObject<TidesData>(result);
-                        tidesData.Values.AddRange(monthlyData.Values);
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        resultMessage += $"An error occurred while downloading tides data: {ex.Message}\n";
-                    }
+                    HttpResponseMessage response = await m_httpClient.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+                
+                    string result = await response.Content.ReadAsStringAsync();
+                    File.WriteAllText(filename, result);
+                
+                    // Deserialize the JSON data and add it to the Values list
+                    TidesData monthlyData = JsonConvert.DeserializeObject<TidesData>(result);
+                    tidesData.Values.AddRange(monthlyData.Values);
+                }
+                catch (HttpRequestException ex)
+                {
+                    resultMessage += $"An error occurred while downloading tides data: {ex.Message}\n";
                 }
 
                 currentDate = currentDate.AddMonths(1);
