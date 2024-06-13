@@ -13,12 +13,14 @@ namespace WeatherApplication.Services
 {
     public class UVService
     {
-        private const string ApiKey = "x1SynI5Mbl1Qzfcdl6fItIWsB2Jhz8QK";
-        private const string BaseUrl = "https://api.niwa.co.nz/uv/data";
+        private string UVIndexApiKey;
+        private string UVIndexBaseUrl;
         private readonly HttpClient _httpClient;
 
-        public UVService()
+        public UVService(string apiKey, string baseUrl)
         {
+            UVIndexApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+            UVIndexBaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             _httpClient = new HttpClient();
         }
 
@@ -26,16 +28,13 @@ namespace WeatherApplication.Services
         {
             try
             {
-
-                
-                var url = $"{BaseUrl}?lat={latitude}&long={longitude}";
+                var url = $"{UVIndexBaseUrl}?lat={latitude}&long={longitude}";
 
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("x-apikey", ApiKey);
+                request.Headers.Add("x-apikey", UVIndexApiKey);
+
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
-
-
                 var jsonResponse = await response.Content.ReadAsStringAsync();
 
                 /*
@@ -48,9 +47,7 @@ namespace WeatherApplication.Services
                     Console.WriteLine($"{header.Key}: {string.Join(",", header.Value)}");
                 } */
 
-
                 var uvModel = JsonConvert.DeserializeObject<UVModel>(jsonResponse);
-
                 return uvModel;
             }
             catch (Exception ex)

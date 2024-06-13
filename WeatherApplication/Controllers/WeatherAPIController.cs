@@ -18,7 +18,7 @@ namespace WeatherApplication.Controllers
             m_weatherModel = model ?? throw new ArgumentNullException(nameof(model));
             m_weatherView = view ?? throw new ArgumentNullException(nameof(view));
         }
-        public async Task RefreshWeatherData(string apiKey, string city)
+        public async Task RefreshWeatherData(string apiKey, string city, string weatherUrl)
         {
             // Ensure the city name is not null or empty.
             if (string.IsNullOrWhiteSpace(city))
@@ -29,7 +29,7 @@ namespace WeatherApplication.Controllers
             {
                 // Call GetWeatherAsync method to retrieve weather data
                 // Retrieve weather data asynchronously.
-                m_weatherData = await m_weatherModel.GetWeatherAsync(apiKey, city);
+                m_weatherData = await m_weatherModel.GetWeatherAsync(apiKey, city, weatherUrl);
             }
             catch (WeatherServiceException ex)
             {

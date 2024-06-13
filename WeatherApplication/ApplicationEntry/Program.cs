@@ -26,7 +26,8 @@ namespace WeatherApplication.ApplicationEntry
             string tideApiKey = "TideApiKey";
             string uvApiKey = "UVIndexApiKey";
             string solarFlareApiKey = "SolarFlareApiKey";
-
+            string weatherBaseUrl = "WatherBaseUrl";
+            string uvBaseUrl = "UVIndexBaseUrl";
 
 
             // Check if the API key configuration file exists
@@ -74,7 +75,7 @@ namespace WeatherApplication.ApplicationEntry
                 }
 
                 // Display weather data using the Weather API key
-                await DisplayWeatherData(actualWeatherAPIKey);
+                await DisplayWeatherData(actualWeatherAPIKey, configReader.GetKeyValue(weatherBaseUrl));
 
                 // Display tide data using the Tide API key
                 // Remove later --- this is the tideAPIKey
@@ -85,7 +86,7 @@ namespace WeatherApplication.ApplicationEntry
                 DisplayHuntingSeasonData();
 
                 // Display UV Index data using the UV API
-                await DisplayUVIndexData();
+                await DisplayUVIndexData(configReader.GetKeyValue(uvApiKey), configReader.GetKeyValue(uvBaseUrl));
 
                 // Display Solar Flare data using the Solar Flare API key
                 await DisplaySolarFlareData(configReader);
@@ -100,10 +101,10 @@ namespace WeatherApplication.ApplicationEntry
             }
 
             logger.LogInfo("Application finished.");
-
         }
+
         // Method to display weather data
-        private static async Task DisplayWeatherData(string apiKey)
+        private static async Task DisplayWeatherData(string apiKey, string weatherBaseUrl)
         {
 
             logger.LogInfo("Fetching Open Weather API Data");
@@ -129,7 +130,7 @@ namespace WeatherApplication.ApplicationEntry
             }
 
             // Retrieve and display weather data for the specified city
-            await weatherController.RefreshWeatherData(apiKey, cityName);
+            await weatherController.RefreshWeatherData(apiKey, cityName, weatherBaseUrl);
             weatherController.RefreshPanelView();
         }
 
@@ -157,7 +158,6 @@ namespace WeatherApplication.ApplicationEntry
             // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
             await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate);
 
-
         }
 
         // Method to load and display hunting season data
@@ -182,7 +182,7 @@ namespace WeatherApplication.ApplicationEntry
         }
 
         // Method to display UV Index data
-        private static async Task DisplayUVIndexData()
+        private static async Task DisplayUVIndexData(string uvApiKey, string uvBaseUrl)
         {
 
             logger.LogInfo("Fetching NIWA - UV Index API Data");
@@ -192,7 +192,7 @@ namespace WeatherApplication.ApplicationEntry
 
             // Set up dependency injection for UV service components
             var uvServiceProvider = new ServiceCollection()
-                .AddSingleton<UVService>()
+                .AddSingleton<UVService>(provider => new UVService(uvApiKey, uvBaseUrl))
                 .AddSingleton<UVController>()
                 .AddSingleton<UVView>()
                 .BuildServiceProvider();
@@ -252,8 +252,6 @@ namespace WeatherApplication.ApplicationEntry
 
             // Retrieve and display solar flare data for the specified date range
             await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, configReader.GetKeyValue("SolarFlareApiKey"));
-
-           
         }
 
 

@@ -18,7 +18,7 @@ namespace WeatherApplication
             m_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         }
 
-        public async Task<WeatherData> GetWeatherAsync(string apiKey, string cityName)
+        public async Task<WeatherData> GetWeatherAsync(string apiKey, string cityName, string weatherBaseUrl)
         {
             if (string.IsNullOrWhiteSpace(cityName))
             {
@@ -28,7 +28,8 @@ namespace WeatherApplication
             {
                 string encodedCityName = Uri.EscapeDataString(cityName);
                 string encodedApiKey = Uri.EscapeDataString(m_apiKey);
-                string url = $"https://api.openweathermap.org/data/2.5/weather?q={encodedCityName}&appid={encodedApiKey}&units=metric";
+                //string url = $"https://api.openweathermap.org/data/2.5/weather?q={encodedCityName}&appid={encodedApiKey}&units=metric";
+                string url = $"{weatherBaseUrl}{encodedCityName}&appid={encodedApiKey}&units=metric";
                 HttpResponseMessage response = await m_httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
