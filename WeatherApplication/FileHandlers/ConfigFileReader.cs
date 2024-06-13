@@ -13,7 +13,6 @@ namespace WeatherApplication.FileHandlers
 
         private m_APIDictionary<string, string> m_API_Dictionary = new m_APIDictionary<string, string>();
 
-
         public ConfigFileReader(string filePath)
         {
             this.filePath = filePath;

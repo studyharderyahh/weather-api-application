@@ -3,6 +3,7 @@ using System.IO; // Provides functionalities for file handling.
 using System.Security.Cryptography; // Provides encryption and decryption functionalities.
 using System.Text;
 
+
 namespace WeatherApplication.FileHandlers
 {
     public class FileEncoder
@@ -16,8 +17,12 @@ namespace WeatherApplication.FileHandlers
         // Initialization vector for encryption.
         private readonly byte[] iv;
 
+        private readonly Logger logger = Logger.Instance();
+
         private FileEncoder(string filePath)
         {
+            logger.LogInfo("File Encoding started...");
+
             this.filePath = filePath;
             using (Aes aes = Aes.Create())
             {
@@ -36,7 +41,7 @@ namespace WeatherApplication.FileHandlers
                 throw new InvalidOperationException("FileEncoder has already been initialized.");
             }
         }
-
+        
         // Property to get the singleton instance
         public static FileEncoder Instance
         {
@@ -66,6 +71,7 @@ namespace WeatherApplication.FileHandlers
             }
             catch (Exception ex)
             {
+                logger.LogError($"Error writing apiKey and its value to file: {ex.Message}");
                 // Handle any errors that occur during writing.
                 Console.WriteLine($"Error writing apiKey and its value to file: {ex.Message}");
             }
@@ -93,6 +99,7 @@ namespace WeatherApplication.FileHandlers
             }
             catch (Exception ex)
             {
+                logger.LogError($"Error reading apiKey and its value from file: {ex.Message}");
                 // Handle any errors that occur during reading.
                 Console.WriteLine($"Error reading apiKey and its value from file: {ex.Message}");
             }
@@ -129,6 +136,7 @@ namespace WeatherApplication.FileHandlers
             }
             catch (Exception ex)
             {
+                logger.LogError($"Encryption error: {ex.Message}");
                 // Handle any errors that occur during encryption.
                 Console.WriteLine($"Encryption error: {ex.Message}");
                 throw;
@@ -162,7 +170,8 @@ namespace WeatherApplication.FileHandlers
                 }
             }
             catch (Exception ex)
-            {
+            {   
+                logger.LogError($"Decryption error: {ex.Message}");
                 // Handle any errors that occur during decryption.
                 Console.WriteLine($"Decryption error: {ex.Message}");
                 throw;

@@ -30,13 +30,11 @@ namespace WeatherApplication.Controllers
             }
             catch (FileNotFoundException ex)
             {
-                Console.WriteLine("File not found.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"File not found. {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred while parsing hunting season data.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"An error occurred while parsing hunting season data. {ex.Message}");
             }
         }
     }
