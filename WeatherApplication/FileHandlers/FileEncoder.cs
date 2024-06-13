@@ -13,28 +13,30 @@ namespace WeatherApplication.FileHandlers
         // File path to store encrypted data.
         private readonly string filePath;
         // Encryption key (base64 string).
-        private readonly byte[] encryptionKey = Convert.FromBase64String("C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=");
+        private readonly byte[] encryptionKey;
         // Initialization vector for encryption.
         private readonly byte[] iv;
 
         private readonly Logger logger = Logger.Instance();
 
-        private FileEncoder(string filePath)
+        private FileEncoder(string filePath, string encryptionKey)
         {
             logger.LogInfo("File Encoding started...");
 
             this.filePath = filePath;
+            this.encryptionKey = Convert.FromBase64String(encryptionKey);
+
             using (Aes aes = Aes.Create())
             {
                 iv = aes.IV;
             }
         }
         // Static method to initialize the singleton instance with a file path
-        public static void Initialize(string path)
+        public static void Initialize(string path, string encryptionKey)
         {
             if (lazyInstance == null)
             {
-                lazyInstance = new Lazy<FileEncoder>(() => new FileEncoder(path));
+                lazyInstance = new Lazy<FileEncoder>(() => new FileEncoder(path, encryptionKey));
             }
             else
             {

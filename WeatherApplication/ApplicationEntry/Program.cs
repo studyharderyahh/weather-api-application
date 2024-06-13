@@ -16,10 +16,6 @@ namespace WeatherApplication.ApplicationEntry
 
             logger.LogInfo("Application started.");
 
-            // Initialize FileEncoder with the file path for encryption keys
-            FileEncoder.Initialize("security.sys");
-            FileEncoder encoder = FileEncoder.Instance;
-
             // Define the file path for API keys configuration file
             string weatherAppConfigFile = "Config/weatherAppConfigFile.json";
 
@@ -28,8 +24,8 @@ namespace WeatherApplication.ApplicationEntry
             // Define keys for accessing different APIs
             string weatherApiKey = "WeatherApiKey";
             string tideApiKey = "TideApiKey";
-            //string uvApiKey = "";
-            //string solarFlareApiKey = "";
+            string uvApiKey = "UVIndexApiKey";
+            string solarFlareApiKey = "SolarFlareApiKey";
 
 
 
@@ -45,6 +41,10 @@ namespace WeatherApplication.ApplicationEntry
             {
                 // Create an instance of ConfigFileReader to read API keys from the config file
                 ConfigFileReader configReader = new ConfigFileReader(weatherAppConfigFile);
+
+                // Initialize FileEncoder with the file path for encryption keys
+                FileEncoder.Initialize("security.sys", configReader.GetKeyValue("EncryptionKey"));
+                FileEncoder encoder = FileEncoder.Instance;
 
                 logger.LogInfo($"Application Name: {configReader.GetKeyValue("appName")}");
                 Console.WriteLine(configReader.GetKeyValue("appName"));
@@ -157,41 +157,6 @@ namespace WeatherApplication.ApplicationEntry
             // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
             await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate);
 
-            /*
-            // Loop through each month in the date range to download tide data
-            while (currentDate <= tideEndDate)
-            {
-                string year = currentDate.Year.ToString();
-                string month = currentDate.Month.ToString("D2");
-                string filename = $"tides_{year}_{month}.json";
-                Console.WriteLine($"Downloading Tide details {currentDate:MMM} {year} into {filename}");
-
-                int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
-                string dateString = currentDate.ToString("yyyy-MM-dd");
-
-                // Construct the API URL with query parameters
-                string url = $"https://api.niwa.co.nz/tides/data?lat={tideLat}&long={tideLon}&datum=MSL&numberOfDays={numberOfDays}&apikey={tideApiKey}&startDate={dateString}";
-
-                // Use HttpClient to make the API request and save the response to a file
-                using (HttpClient client = new HttpClient())
-                {
-                    try
-                    {
-                        HttpResponseMessage response = await client.GetAsync(url);
-                        response.EnsureSuccessStatusCode();
-                        string result = await response.Content.ReadAsStringAsync();
-                        File.WriteAllText(filename, result);
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        Console.WriteLine($"An error occurred while downloading tides data: {ex.Message}");
-                    }
-                }
-
-                currentDate = currentDate.AddMonths(1); // Move to the next month
-            } */
-
-            Console.WriteLine("Done");
 
         }
 

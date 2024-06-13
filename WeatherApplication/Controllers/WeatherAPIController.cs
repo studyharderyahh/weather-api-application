@@ -10,6 +10,8 @@ namespace WeatherApplication.Controllers
         private readonly WeatherApplicationView m_weatherView; // Reference to the view.
         private readonly WeatherModel m_weatherModel; // Reference to the model.
         private WeatherData? m_weatherData; // Holds the latest weather data.
+
+        Logger logger = Logger.Instance();
         public WeatherAPIController(WeatherModel model, WeatherApplicationView view)
         {
             // Ensure the model and view are not null.
@@ -32,7 +34,9 @@ namespace WeatherApplication.Controllers
             catch (WeatherServiceException ex)
             {
                 // Log any errors that occur during the data retrieval.
-                ErrorLogger.Instance.LogError($"An error occurred while retrieving weather data: {ex.Message}");
+                //ErrorLogger.Instance.LogError($"An error occurred while retrieving weather data: {ex.Message}");
+
+                logger.LogError($"An error occurred while retrieving weather data: {ex.Message}");
             }
         }
         public void RefreshPanelView()

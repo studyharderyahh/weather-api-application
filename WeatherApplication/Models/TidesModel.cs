@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WeatherApplication.APIHelpers;
+using WeatherApplication.FileHandlers;
 
 namespace WeatherApplication
 {
@@ -94,7 +95,7 @@ namespace WeatherApplication
                 }
                 catch (HttpRequestException ex)
                 {
-                    resultMessage += $"An error occurred while downloading tides data: {ex.Message}\n";
+                    ErrorLogger.Instance.LogError($"An error occurred while downloading tides data: {ex.Message}\n");
                 }
 
                 currentDate = currentDate.AddMonths(1);

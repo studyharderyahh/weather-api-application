@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using WeatherApplication.Views;
+using WeatherApplication.FileHandlers;
 
 namespace WeatherApplication.Controllers
 {
@@ -10,6 +11,8 @@ namespace WeatherApplication.Controllers
     {
         private readonly HuntingModel m_huntingModel;
         private readonly HuntingView m_huntingView;
+
+        Logger logger = Logger.Instance();
 
         // Constructor to initialize the model and view
         public HuntingController(HuntingModel model, HuntingView view)
@@ -31,10 +34,13 @@ namespace WeatherApplication.Controllers
             catch (FileNotFoundException ex)
             {
                 Console.WriteLine($"File not found. {ex.Message}");
+                logger.LogError($"File not found. {ex.Message}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while parsing hunting season data. {ex.Message}");
+                logger.LogError($"An error occurred while parsing hunting season data. {ex.Message}");
+
             }
         }
     }
