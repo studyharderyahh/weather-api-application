@@ -27,7 +27,9 @@ namespace WeatherApplication.ApplicationEntry
             string uvApiKey = "UVIndexApiKey";
             string solarFlareApiKey = "SolarFlareApiKey";
             string weatherBaseUrl = "WatherBaseUrl";
+            string tidesBaseUrl = "TidesBaseUrl";
             string uvBaseUrl = "UVIndexBaseUrl";
+            string solarFlareBaseUrl = "SolarFlareBaseUrl";
 
 
             // Check if the API key configuration file exists
@@ -80,7 +82,7 @@ namespace WeatherApplication.ApplicationEntry
                 // Display tide data using the Tide API key
                 // Remove later --- this is the tideAPIKey
                 // actualAPIKey = "VtqRNuV5F79dsA8nPGCBhHaCeEJbocPd";
-                await DownloadTideData(configReader.GetKeyValue(tideApiKey));
+                await DownloadTideData(configReader.GetKeyValue(tideApiKey), configReader.GetKeyValue(tidesBaseUrl));
 
                 // Load and display hunting season data
                 DisplayHuntingSeasonData();
@@ -89,7 +91,7 @@ namespace WeatherApplication.ApplicationEntry
                 await DisplayUVIndexData(configReader.GetKeyValue(uvApiKey), configReader.GetKeyValue(uvBaseUrl));
 
                 // Display Solar Flare data using the Solar Flare API key
-                await DisplaySolarFlareData(configReader);
+                await DisplaySolarFlareData(configReader.GetKeyValue(solarFlareApiKey), configReader.GetKeyValue(solarFlareBaseUrl));
 
                 Console.ReadKey();
 
@@ -135,7 +137,7 @@ namespace WeatherApplication.ApplicationEntry
         }
 
         // Method to download tide data
-        private static async Task DownloadTideData(string tideApiKey)
+        private static async Task DownloadTideData(string tideApiKey, string tidesBaseUrl)
         {
 
             logger.LogInfo("Fetching NIWA Tide API Data");
@@ -156,7 +158,7 @@ namespace WeatherApplication.ApplicationEntry
             DateTime currentDate = tideStartDate;
 
             // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
-            await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate);
+            await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate, tidesBaseUrl);
 
         }
 
@@ -225,10 +227,8 @@ namespace WeatherApplication.ApplicationEntry
             uvView.DisplayUVData(uvModel);
         }
 
-
-
         // Method to display solar flare data
-        private static async Task DisplaySolarFlareData(ConfigFileReader configReader)
+        private static async Task DisplaySolarFlareData(string solarFlareApiKey, string solarFlareBaseUrl)
         {
             logger.LogInfo("Fetching NASA - Solar Flare Index API Data");
             Console.WriteLine("\n----------------------------------------");
@@ -251,7 +251,7 @@ namespace WeatherApplication.ApplicationEntry
 
 
             // Retrieve and display solar flare data for the specified date range
-            await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, configReader.GetKeyValue("SolarFlareApiKey"));
+            await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, solarFlareApiKey, solarFlareBaseUrl);
         }
 
 

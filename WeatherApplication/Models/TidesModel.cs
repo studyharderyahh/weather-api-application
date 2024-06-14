@@ -40,7 +40,7 @@ namespace WeatherApplication
            
         }
         // Method to fetch tides data asynchronously
-        public async Task<TidesData> GetTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
+        public async Task<TidesData> GetTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate, string tidesBaseUrl)
         {
             // Validate API key
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -79,7 +79,8 @@ namespace WeatherApplication
                 int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                 string dateString = currentDate.ToString("yyyy-MM-dd");
                 // Construct URL for API request
-                string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
+                // string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
+                string url = $"{tidesBaseUrl}{lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
                                 
                 try
                 {

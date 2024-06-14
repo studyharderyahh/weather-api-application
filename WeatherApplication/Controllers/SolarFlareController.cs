@@ -19,9 +19,9 @@ namespace WeatherApplication.Controllers
             solarFlaresView = flaresView;
         }
 
-        public async Task GetFlaresAndDisplayAsync(string startDate, string endDate, string apiKey)
+        public async Task GetFlaresAndDisplayAsync(string startDate, string endDate, string apiKey, string solarFlareBaseUrl)
         {
-            var flares = await solarFlaresService.GetFlaresAsync(startDate, endDate, apiKey);
+            var flares = await solarFlaresService.GetFlaresAsync(startDate, endDate, apiKey, solarFlareBaseUrl);
             solarFlaresView.DisplayFlares(flares);
         }
     }

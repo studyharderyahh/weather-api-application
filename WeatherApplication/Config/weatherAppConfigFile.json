@@ -6,5 +6,7 @@
   "SolarFlareApiKey": "4FvQD8YChIJIybN1u2lnjwePwtD4GF2YgTZAFuzz",
   "EncryptionKey": "C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=",
   "WatherBaseUrl": "https://api.openweathermap.org/data/2.5/weather?q=",
-  "UVIndexBaseUrl": "https://api.niwa.co.nz/uv/data"
+  "TidesBaseUrl": "https://api.niwa.co.nz/tides/data?lat=",
+  "UVIndexBaseUrl": "https://api.niwa.co.nz/uv/data",
+  "SolarFlareBaseUrl": "https://api.nasa.gov/DONKI/FLR?startDate="
 }

@@ -22,11 +22,12 @@ namespace WeatherApplication.Controllers
             m_tidesView = view ?? throw new ArgumentNullException(nameof(view));
         }
 
-        public async Task RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
+        public async Task RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate, string tidesBaseUrl)
         {
             try
             {
-                m_tidesData = await m_tidesModel.GetTidesData(lat, lon, apiKey, startDate, endDate);
+                //I passed tidesBaseUrl from the Main program
+                m_tidesData = await m_tidesModel.GetTidesData(lat, lon, apiKey, startDate, endDate, tidesBaseUrl);
                 m_tidesView.Render(m_tidesData);
             }
             catch (ArgumentException ex)
