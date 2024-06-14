@@ -13,6 +13,7 @@ namespace WeatherApplication
     public class TidesModel
     {
 
+        private Logger logger = Logger.Instance();
         private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance;
 
         // Nested class to represent tides data structure
@@ -79,7 +80,6 @@ namespace WeatherApplication
                 int numberOfDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                 string dateString = currentDate.ToString("yyyy-MM-dd");
                 // Construct URL for API request
-                // string url = $"https://api.niwa.co.nz/tides/data?lat={lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
                 string url = $"{tidesBaseUrl}{lat}&long={lon}&datum=MSL&numberOfDays={numberOfDays}&apikey={apiKey}&startDate={dateString}";
                                 
                 try
@@ -96,7 +96,7 @@ namespace WeatherApplication
                 }
                 catch (HttpRequestException ex)
                 {
-                    ErrorLogger.Instance.LogError($"An error occurred while downloading tides data: {ex.Message}\n");
+                    logger.LogError($"An error occurred while downloading tides data: {ex.Message}\n");
                 }
 
                 currentDate = currentDate.AddMonths(1);

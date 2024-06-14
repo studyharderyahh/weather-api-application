@@ -4,46 +4,62 @@ namespace WeatherApplication.Views
 {
     public class WeatherApplicationView
     {
-        // Method to render weather data to the console.(gpt)
+        /// <summary>
+        /// Renders weather data to the console.
+        /// </summary>
+        /// <param name="weatherData">WeatherData object containing weather information.</param>
         public void Render(WeatherData weatherData)
         {
-            if (null == weatherData)
+            if (weatherData == null)
             {
                 Console.WriteLine("Weather data is null.");
+                return;
+            }
 
-            }
-            else
-            {
-                // Display weather data details.
-                Console.WriteLine($"Weather for {weatherData.Name}:");
-                // Safe navigation with null-conditional operators.
-                Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}");
-                Console.WriteLine($"Coordinates: Lon: {weatherData.Coord?.Lon}, Lat: {weatherData.Coord?.Lat}"); // Added null-conditional operator
-                Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}"); // Added null-conditional operator
-                Console.WriteLine($"Base: {weatherData.Base}");
-                Console.WriteLine($"Temperature: {weatherData.Main?.Temp}°C"); // Added null-conditional operator
-                Console.WriteLine($"Feels Like: {weatherData.Main?.Feels_like}°C"); // Added null-conditional operator
-                Console.WriteLine($"Minimum Temperature: {weatherData.Main?.Temp_min}°C"); // Added null-conditional operator
-                Console.WriteLine($"Maximum Temperature: {weatherData.Main?.Temp_max}°C"); // Added null-conditional operator
-                Console.WriteLine($"Pressure: {weatherData.Main?.Pressure}hPa"); // Added null-conditional operator
-                Console.WriteLine($"Humidity: {weatherData.Main?.Humidity}%"); // Added null-conditional operator
-                Console.WriteLine($"Visibility: {weatherData.Visibility}");
-                Console.WriteLine($"Wind Speed: {weatherData.Wind?.Speed}m/s"); // Added null-conditional operator
-                Console.WriteLine($"Wind Degree: {weatherData.Wind?.Deg}°"); // Added null-conditional operator
-                Console.WriteLine($"Cloudiness: {weatherData.Clouds?.All}%"); // Added null-conditional operator
-                Console.WriteLine($"Date and Time (UTC): {UnixTimeStampToDateTime(weatherData.Dt)}"); // Convert UNIX timestamp to DateTime
-                Console.WriteLine($"Sys Info: Type: {weatherData.Sys?.Type}, ID: {weatherData.Sys?.Id}, Country: {weatherData.Sys?.Country}, Sunrise: {UnixTimeStampToDateTime(weatherData.Sys.Sunrise)}, Sunset: {UnixTimeStampToDateTime(weatherData.Sys.Sunset)}"); // Added null-conditional operator and converted UNIX timestamps
-                Console.WriteLine($"Timezone Offset (Sec): {weatherData.Timezone}");
-                Console.WriteLine($"City ID: {weatherData.Id}");
-                Console.WriteLine($"City Name: {weatherData.Name}");
-                Console.WriteLine($"Cod: {weatherData.Cod}");
-            }
+            Console.WriteLine($"Weather for {weatherData.Name}:");
+            Console.WriteLine($"Weather Description: {weatherData.Weather?[0]?.Description}");
+            Console.WriteLine($"Coordinates: Lon: {weatherData.Coord?.Lon}, Lat: {weatherData.Coord?.Lat}");
+            Console.WriteLine($"Base: {weatherData.Base}");
+            Console.WriteLine($"Temperature: {FormatTemperature(weatherData.Main?.Temp)}");
+            Console.WriteLine($"Feels Like: {FormatTemperature(weatherData.Main?.Feels_like)}");
+            Console.WriteLine($"Minimum Temperature: {FormatTemperature(weatherData.Main?.Temp_min)}");
+            Console.WriteLine($"Maximum Temperature: {FormatTemperature(weatherData.Main?.Temp_max)}");
+            Console.WriteLine($"Pressure: {weatherData.Main?.Pressure}hPa");
+            Console.WriteLine($"Humidity: {weatherData.Main?.Humidity}%");
+            Console.WriteLine($"Visibility: {weatherData.Visibility}");
+            Console.WriteLine($"Wind Speed: {weatherData.Wind?.Speed}m/s");
+            Console.WriteLine($"Wind Degree: {weatherData.Wind?.Deg}°");
+            Console.WriteLine($"Cloudiness: {weatherData.Clouds?.All}%");
+            Console.WriteLine($"Date and Time (UTC): {UnixTimeStampToDateTime(weatherData.Dt)}");
+            Console.WriteLine($"Sys Info: Type: {weatherData.Sys?.Type}, ID: {weatherData.Sys?.Id}, Country: {weatherData.Sys?.Country}, Sunrise: {UnixTimeStampToDateTime(weatherData.Sys?.Sunrise)}, Sunset: {UnixTimeStampToDateTime(weatherData.Sys?.Sunset)}");
+            Console.WriteLine($"Timezone Offset (Sec): {weatherData.Timezone}");
+            Console.WriteLine($"City ID: {weatherData.Id}");
+            Console.WriteLine($"City Name: {weatherData.Name}");
+            Console.WriteLine($"Cod: {weatherData.Cod}");
         }
 
-            // Helper method to convert Unix timestamp to DateTime.
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        /// <summary>
+        /// Helper method to format temperature values.
+        /// </summary>
+        /// <param name="temperature">Temperature value in Celsius.</param>
+        /// <returns>Formatted temperature string.</returns>
+        private string FormatTemperature(double? temperature)
         {
-            return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).UtcDateTime;
+            return temperature.HasValue ? $"{temperature.Value}°C" : "N/A";
+        }
+
+        /// <summary>
+        /// Helper method to convert Unix timestamp to DateTime.
+        /// </summary>
+        /// <param name="unixTimeStamp">Nullable long Unix timestamp value.</param>
+        /// <returns>DateTime representation of the Unix timestamp in UTC, or null if input is null.</returns>
+        private DateTime? UnixTimeStampToDateTime(long? unixTimeStamp)
+        {
+            if (unixTimeStamp.HasValue)
+            {
+                return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp.Value).UtcDateTime;
+            }
+            return null;
         }
     }
 }

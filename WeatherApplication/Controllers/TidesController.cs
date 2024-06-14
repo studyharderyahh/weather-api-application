@@ -14,7 +14,7 @@ namespace WeatherApplication.Controllers
         private readonly TidesView m_tidesView;
         private TidesModel.TidesData? m_tidesData;
 
-        Logger logger = Logger.Instance();
+        private Logger logger = Logger.Instance();
 
         public TidesController(TidesModel model, TidesView view)
         {
@@ -32,7 +32,6 @@ namespace WeatherApplication.Controllers
             }
             catch (ArgumentException ex)
             {
-                //ErrorLogger.Instance.LogError($"An error occurred in RefreshTidesData: {ex.Message}");
                 logger.LogError($"An error occurred in RefreshTidesData: {ex.Message}");
             }
         }

@@ -1,9 +1,11 @@
-﻿using WeatherApplication.Controllers;
-using WeatherApplication.FileHandlers;
-using WeatherApplication.Views;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using WeatherApplication.Controllers;
+using WeatherApplication.FileHandlers;
 using WeatherApplication.Services;
-
+using WeatherApplication.Views;
 
 namespace WeatherApplication.ApplicationEntry
 {
@@ -13,99 +15,114 @@ namespace WeatherApplication.ApplicationEntry
 
         static async Task Main(string[] args)
         {
-
             logger.LogInfo("Application started.");
 
-            // Define the file path for API keys configuration file
             string weatherAppConfigFile = "Config/weatherAppConfigFile.json";
 
-            logger.LogInfo($"Reading config file: {weatherAppConfigFile}");
-
-            // Define keys for accessing different APIs
-            string weatherApiKey = "WeatherApiKey";
-            string tideApiKey = "TideApiKey";
-            string uvApiKey = "UVIndexApiKey";
-            string solarFlareApiKey = "SolarFlareApiKey";
-            string weatherBaseUrl = "WatherBaseUrl";
-            string tidesBaseUrl = "TidesBaseUrl";
-            string uvBaseUrl = "UVIndexBaseUrl";
-            string solarFlareBaseUrl = "SolarFlareBaseUrl";
-
-
-            // Check if the API key configuration file exists
-            if (!File.Exists(weatherAppConfigFile))
+            if (!CheckConfigFileExists(weatherAppConfigFile))
             {
-                logger.LogError($"The file '{weatherAppConfigFile}' does not exist.");
-                Console.WriteLine($"The file '{weatherAppConfigFile}' does not exist.");
-                // Exit if the file does not exist
                 return;
             }
-            try
+
+            var configReader = InitializeConfigReader(weatherAppConfigFile);
+            if (configReader == null)
             {
-                // Create an instance of ConfigFileReader to read API keys from the config file
-                ConfigFileReader configReader = new ConfigFileReader(weatherAppConfigFile);
-
-                // Initialize FileEncoder with the file path for encryption keys
-                FileEncoder.Initialize("security.sys", configReader.GetKeyValue("EncryptionKey"));
-                FileEncoder encoder = FileEncoder.Instance;
-
-                logger.LogInfo($"Application Name: {configReader.GetKeyValue("appName")}");
-                Console.WriteLine(configReader.GetKeyValue("appName"));
-
-                // Write the Weather API key to the encoder and read it back
-                encoder.Write(weatherApiKey, configReader.GetKeyValue(weatherApiKey));
-
-                // Read the API key from the file
-                // encoder.Write("ApiKey", "a173994356f879bb3e422754bfdde559");
-                string actualWeatherAPIKey = encoder.Read(weatherApiKey);
-
-                // Prompt the user for the Weather API key if it is not found or empty
-                if (string.IsNullOrEmpty(actualWeatherAPIKey))
-                {
-                    Console.Write("Enter Weather API key ");
-                    actualWeatherAPIKey = Console.ReadLine();
-                    // Write the API key to the file
-                    encoder.Write(weatherApiKey, actualWeatherAPIKey);
-                }
-
-                // Check if the API key is still empty or whitespace
-                if (string.IsNullOrWhiteSpace(actualWeatherAPIKey))
-                {
-                    logger.LogWarning("No valid API key is provided. Register for API Key at https://developer.niwa.co.nz");
-                    Console.WriteLine("Register for an API key at https://developer.niwa.co.nz");
-                    return;
-                }
-
-                // Display weather data using the Weather API key
-                await DisplayWeatherData(actualWeatherAPIKey, configReader.GetKeyValue(weatherBaseUrl));
-
-                // Display tide data using the Tide API key
-                // Remove later --- this is the tideAPIKey
-                // actualAPIKey = "VtqRNuV5F79dsA8nPGCBhHaCeEJbocPd";
-                await DownloadTideData(configReader.GetKeyValue(tideApiKey), configReader.GetKeyValue(tidesBaseUrl));
-
-                // Load and display hunting season data
-                DisplayHuntingSeasonData();
-
-                // Display UV Index data using the UV API
-                await DisplayUVIndexData(configReader.GetKeyValue(uvApiKey), configReader.GetKeyValue(uvBaseUrl));
-
-                // Display Solar Flare data using the Solar Flare API key
-                await DisplaySolarFlareData(configReader.GetKeyValue(solarFlareApiKey), configReader.GetKeyValue(solarFlareBaseUrl));
-
-                Console.ReadKey();
-
+                return;
             }
-            catch (Exception ex)
-            {   
-                logger.LogError($"An error occurred: {ex.Message}");
-                Console.WriteLine($"An error occurred: {ex.Message}");
+
+            var encoder = InitializeFileEncoder(configReader);
+            if (encoder == null)
+            {
+                return;
             }
+
+            await ProcessAPIs(configReader, encoder);
 
             logger.LogInfo("Application finished.");
         }
 
-        // Method to display weather data
+        private static bool CheckConfigFileExists(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                logger.LogError($"The file '{filePath}' does not exist.");
+                Console.WriteLine($"The file '{filePath}' does not exist.");
+                return false;
+            }
+            return true;
+        }
+
+        private static ConfigFileReader InitializeConfigReader(string configFilePath)
+        {
+            try
+            {
+                logger.LogInfo($"Reading config file: {configFilePath}");
+                return new ConfigFileReader(configFilePath);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error reading config file: {ex.Message}");
+                Console.WriteLine($"Error reading config file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static FileEncoder InitializeFileEncoder(ConfigFileReader configReader)
+        {
+            try
+            {
+                FileEncoder.Initialize("security.sys", configReader.GetKeyValue("EncryptionKey"));
+                return FileEncoder.Instance;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error initializing FileEncoder: {ex.Message}");
+                Console.WriteLine($"Error initializing FileEncoder: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static async Task ProcessAPIs(ConfigFileReader configReader, FileEncoder encoder)
+        {
+            string weatherApiKey = GetApiKey("WeatherApiKey", configReader, encoder);
+            if (string.IsNullOrWhiteSpace(weatherApiKey))
+            {
+                PromptForApiKey("Weather API", weatherApiKey, encoder);
+            }
+
+            string tideApiKey = configReader.GetKeyValue("TideApiKey");
+            string uvApiKey = configReader.GetKeyValue("UVIndexApiKey");
+            string solarFlareApiKey = configReader.GetKeyValue("SolarFlareApiKey");
+
+            await DisplayWeatherData(weatherApiKey, configReader.GetKeyValue("WeatherBaseUrl"));
+            await DownloadTideData(tideApiKey, configReader.GetKeyValue("TidesBaseUrl"));
+            DisplayHuntingSeasonData();
+            await DisplayUVIndexData(uvApiKey, configReader.GetKeyValue("UVIndexBaseUrl"));
+            await DisplaySolarFlareData(solarFlareApiKey, configReader.GetKeyValue("SolarFlareBaseUrl"));
+        }
+
+        private static string GetApiKey(string keyName, ConfigFileReader configReader, FileEncoder encoder)
+        {
+            encoder.Write(keyName, configReader.GetKeyValue(keyName));
+            return encoder.Read(keyName);
+        }
+
+        private static void PromptForApiKey(string apiName, string apiKey, FileEncoder encoder)
+        {
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                Console.Write($"Enter {apiName} key: ");
+                apiKey = Console.ReadLine();
+                encoder.Write(apiName, apiKey);
+            }
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                logger.LogWarning($"No valid {apiName} key is provided. Register for API Key at the appropriate site.");
+                Console.WriteLine($"Register for an API key at the appropriate site.");
+            }
+        }
+
         private static async Task DisplayWeatherData(string apiKey, string weatherBaseUrl)
         {
 
@@ -118,8 +135,6 @@ namespace WeatherApplication.ApplicationEntry
             var weatherService = new WeatherModel(apiKey);
             var weatherView = new WeatherApplicationView();
             var weatherController = new WeatherAPIController(weatherService, weatherView);
-
-
 
             // Prompt the user for the city name, with a default value of "Takanini"
             string cityName = "Takanini";
@@ -144,7 +159,7 @@ namespace WeatherApplication.ApplicationEntry
             Console.WriteLine("\n-----------------------------");
             Console.WriteLine("   NIWA - TIDE API Data ");
             Console.WriteLine("-----------------------------\n");
-            
+
             // Create instances of the weather model, view, and controller
             var tidesService = new TidesModel();
             var tidesView = new TidesView();
@@ -158,7 +173,7 @@ namespace WeatherApplication.ApplicationEntry
             DateTime currentDate = tideStartDate;
 
             // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
-            await tidesController.RefreshTidesData(tideLat,tideLon, tideApiKey,tideStartDate,tideEndDate, tidesBaseUrl);
+            await tidesController.RefreshTidesData(tideLat, tideLon, tideApiKey, tideStartDate, tideEndDate, tidesBaseUrl);
 
         }
 
@@ -172,7 +187,6 @@ namespace WeatherApplication.ApplicationEntry
 
             // Define the file path for hunting season data
             string huntingFilePath = "Config/hunting_season_data.txt";
-
 
             // Create instances of the hunting model, view, and controller
             var huntingModel = new HuntingModel();
@@ -249,11 +263,8 @@ namespace WeatherApplication.ApplicationEntry
             string solarFlareStartDate = "2024-05-01";
             string solarFlareEndDate = "2024-05-02";
 
-
             // Retrieve and display solar flare data for the specified date range
             await solarFlareController.GetFlaresAndDisplayAsync(solarFlareStartDate, solarFlareEndDate, solarFlareApiKey, solarFlareBaseUrl);
         }
-
-
     }
 }
