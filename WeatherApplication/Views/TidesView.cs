@@ -1,18 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using WeatherApplication.Models;
 
 namespace WeatherApplication.Views
 {
     public class TidesView
     {
+        /// <summary>
+        /// Renders the tide data including metadata and values.
+        /// </summary>
+        /// <param name="tideData">The tide data to be rendered.</param>
         public void Render(TidesModel.TidesData tideData)
         {
             Console.WriteLine("Tides Data:");
 
-            // Render metadata
+            RenderMetadata(tideData);
+            RenderTideValues(tideData.Values);
+        }
+
+        /// <summary>
+        /// Renders the metadata of the tide data.
+        /// </summary>
+        /// <param name="tideData">The tide data containing metadata.</param>
+        private void RenderMetadata(TidesModel.TidesData tideData)
+        {
+            Console.WriteLine("Metadata:");
             Console.WriteLine($"Latitude: {tideData.Metadata.Latitude}");
             Console.WriteLine($"Longitude: {tideData.Metadata.Longitude}");
             Console.WriteLine($"Datum: {tideData.Metadata.Datum}");
@@ -20,18 +32,19 @@ namespace WeatherApplication.Views
             Console.WriteLine($"Number of Days: {tideData.Metadata.Days}");
             Console.WriteLine($"Interval: {tideData.Metadata.Interval}");
             Console.WriteLine($"Height: {tideData.Metadata.Height}");
+        }
 
-            // Render tide values
-            int ctr = 0;
+        /// <summary>
+        /// Renders the tide values.
+        /// </summary>
+        /// <param name="values">The list of tide values to be rendered.</param>
+        /// <param name="maxValuesToShow">The maximum number of tide values to show. Default is 10.</param>
+        private void RenderTideValues(List<TidesModel.TideValue> values, int maxValuesToShow = 10)
+        {
             Console.WriteLine("\nTide Values:");
-            foreach (var value in tideData.Values)
+            for (int i = 0; i < values.Count && i < maxValuesToShow; i++)
             {
-                if ( ctr < 10 )
-                {
-                    Console.WriteLine($"Time: {value.Time}, Value: {value.Value}");
-                    ctr++; 
-                }
-                
+                Console.WriteLine($"Time: {values[i].Time}, Value: {values[i].Value}");
             }
         }
     }

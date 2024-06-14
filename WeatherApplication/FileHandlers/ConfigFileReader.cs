@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace WeatherApplication.FileHandlers
 {
-    internal class ConfigFileReader
+    public class ConfigFileReader
     {
         private readonly string filePath;
         private Dictionary<string, string> m_API_Dictionary = new Dictionary<string, string>();
