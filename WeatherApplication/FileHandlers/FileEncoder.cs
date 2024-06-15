@@ -118,9 +118,9 @@ namespace WeatherApplication.FileHandlers
                 {
                     aesAlg.Key = encryptionKey;
                     aesAlg.IV = iv;
-                    // Create an encryptor to perform the stream transform.
+
                     ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-                    // Create the streams used for encryption.
+
                     using (MemoryStream msEncrypt = new MemoryStream())
                     {
                         using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
