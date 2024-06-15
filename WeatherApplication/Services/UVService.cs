@@ -13,29 +13,34 @@ namespace WeatherApplication.Services
 {
     public class UVService
     {
-        private string UVIndexApiKey;
-        private string UVIndexBaseUrl;
-        private readonly HttpClient _httpClient;
+        private readonly string uvIndexApiKey;
+        private readonly string uvIndexBaseUrl;
+        private readonly HttpClient httpClient;
+
+        private const string ApiKeyHeader = "x-apikey";
+        private const string ApiKeyNullMessage = "API key cannot be null";
+        private const string BaseUrlNullMessage = "Base URL cannot be null";
+        private const string ErrorMessage = "Error fetching data from API";
 
         public UVService(string apiKey, string baseUrl)
         {
-            UVIndexApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-            UVIndexBaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
-            _httpClient = new HttpClient();
+            uvIndexApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey), ApiKeyNullMessage);
+            uvIndexBaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl), BaseUrlNullMessage);
+            httpClient = new HttpClient();
         }
 
         public async Task<UVModel> GetUVDataAsync(double latitude, double longitude)
         {
             try
             {
-                var url = $"{UVIndexBaseUrl}?lat={latitude}&long={longitude}";
-
+                var url = $"{uvIndexBaseUrl}?lat={latitude}&long={longitude}";
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("x-apikey", UVIndexApiKey);
+                request.Headers.Add(ApiKeyHeader, uvIndexApiKey);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await httpClient.SendAsync(request).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
-                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 /*
                 // Log the response content and headers
@@ -50,9 +55,9 @@ namespace WeatherApplication.Services
                 var uvModel = JsonConvert.DeserializeObject<UVModel>(jsonResponse);
                 return uvModel;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                Console.WriteLine($"Error fetching data from API: {ex.Message}");
+                Console.WriteLine($"{ErrorMessage}: {ex.Message}");
                 return null;
             }
         }

@@ -1,24 +1,36 @@
 ﻿using System;
-using System.IO; // Provides functionalities for file handling.
-using System.Security.Cryptography; // Provides encryption and decryption functionalities.
+using System.Buffers.Text;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
-
 
 namespace WeatherApplication.FileHandlers
 {
+    /// <summary>
+    /// Provides functionalities for encoding and decoding files with encryption.
+    /// </summary>
     public class FileEncoder
     {
-        // Lazy initialization of the singleton instance
+        // Lazy initialization of the singleton instance.
         private static Lazy<FileEncoder> lazyInstance;
+
         // File path to store encrypted data.
         private readonly string filePath;
+
         // Encryption key (base64 string).
         private readonly byte[] encryptionKey;
+
         // Initialization vector for encryption.
         private readonly byte[] iv;
 
+        // Logger instance for logging operations.
         private readonly Logger logger = Logger.Instance();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileEncoder"/> class.
+        /// </summary>
+        /// <param name="filePath">The file path where encrypted data will be stored.</param>
+        /// <param name="encryptionKey">The encryption key as a base64 string.</param>
         private FileEncoder(string filePath, string encryptionKey)
         {
             logger.LogInfo("File Encoding started...");
@@ -31,7 +43,12 @@ namespace WeatherApplication.FileHandlers
                 iv = aes.IV;
             }
         }
-        // Static method to initialize the singleton instance with a file path
+
+        /// <summary>
+        /// Initializes the singleton instance with the specified file path and encryption key.
+        /// </summary>
+        /// <param name="path">The file path where encrypted data will be stored.</param>
+        /// <param name="encryptionKey">The encryption key as a base64 string.</param>
         public static void Initialize(string path, string encryptionKey)
         {
             if (lazyInstance == null)
@@ -43,8 +60,10 @@ namespace WeatherApplication.FileHandlers
                 throw new InvalidOperationException("FileEncoder has already been initialized.");
             }
         }
-        
-        // Property to get the singleton instance
+
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="FileEncoder"/> class.
+        /// </summary>
         public static FileEncoder Instance
         {
             get
@@ -57,14 +76,17 @@ namespace WeatherApplication.FileHandlers
             }
         }
 
-        // Method to write encrypted key-value pairs to file.
+        /// <summary>
+        /// Writes an encrypted key-value pair to the file.
+        /// </summary>
+        /// <param name="apiKey">The key to be encrypted.</param>
+        /// <param name="value">The value to be encrypted.</param>
         public void Write(string apiKey, string value)
         {
             try
             {
                 // Encrypt the key-value pair.
                 string encryptedPair = EncryptString($"{apiKey}={value}", encryptionKey, iv);
-
                 // Write the encrypted pair to the file.
                 using (StreamWriter writer = new StreamWriter(filePath, true))
                 {
@@ -74,17 +96,19 @@ namespace WeatherApplication.FileHandlers
             catch (Exception ex)
             {
                 logger.LogError($"Error writing apiKey and its value to file: {ex.Message}");
-                // Handle any errors that occur during writing.
                 Console.WriteLine($"Error writing apiKey and its value to file: {ex.Message}");
             }
         }
 
-        // Method to read the decrypted value for a given key.
+        /// <summary>
+        /// Reads the decrypted value for a given key from the file.
+        /// </summary>
+        /// <param name="apiKey">The key whose value needs to be decrypted.</param>
+        /// <returns>The decrypted value associated with the key.</returns>
         public string Read(string apiKey)
         {
             try
             {
-                // Read all lines from the file.
                 string[] lines = File.ReadAllLines(filePath);
                 // Search for the specified key.
                 foreach (string line in lines)
@@ -92,6 +116,7 @@ namespace WeatherApplication.FileHandlers
                     // Decrypt each line and split into key-value pairs.
                     string decryptedLine = DecryptString(line, encryptionKey, iv);
                     string[] parts = decryptedLine.Split('=');
+
                     // Return the value if the key matches.
                     if (parts.Length == 2 && parts[0] == apiKey)
                     {
@@ -102,14 +127,19 @@ namespace WeatherApplication.FileHandlers
             catch (Exception ex)
             {
                 logger.LogError($"Error reading apiKey and its value from file: {ex.Message}");
-                // Handle any errors that occur during reading.
                 Console.WriteLine($"Error reading apiKey and its value from file: {ex.Message}");
             }
             // Return null if key is not found.
             return null;
         }
 
-        // Private method to encrypt a string using AES.
+        /// <summary>
+        /// Encrypts a string using AES encryption.
+        /// </summary>
+        /// <param name="input">The input string to encrypt.</param>
+        /// <param name="encryptionKey">The encryption key as a byte array.</param>
+        /// <param name="iv">The initialization vector as a byte array.</param>
+        /// <returns>The encrypted string in base64 format.</returns>
         private string EncryptString(string input, byte[] encryptionKey, byte[] iv)
         {
             try
@@ -119,8 +149,9 @@ namespace WeatherApplication.FileHandlers
                     aesAlg.Key = encryptionKey;
                     aesAlg.IV = iv;
 
+                    // Create an encryptor to perform the stream transform.
                     ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
+                    // Create the streams used for encryption.
                     using (MemoryStream msEncrypt = new MemoryStream())
                     {
                         using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
@@ -139,13 +170,18 @@ namespace WeatherApplication.FileHandlers
             catch (Exception ex)
             {
                 logger.LogError($"Encryption error: {ex.Message}");
-                // Handle any errors that occur during encryption.
                 Console.WriteLine($"Encryption error: {ex.Message}");
                 throw;
             }
         }
 
-        // Private method to decrypt a string using AES.
+        /// <summary>
+        /// Decrypts a string using AES encryption.
+        /// </summary>
+        /// <param name="input">The input string to decrypt.</param>
+        /// <param name="encryptionKey">The encryption key as a byte array.</param>
+        /// <param name="iv">The initialization vector as a byte array.</param>
+        /// <returns>The decrypted string.</returns>
         private string DecryptString(string input, byte[] encryptionKey, byte[] iv)
         {
             try
@@ -156,7 +192,6 @@ namespace WeatherApplication.FileHandlers
                     aesAlg.IV = iv;
                     // Create a decryptor to perform the stream transform.
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
                     // Create the streams used for decryption.
                     using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(input)))
                     {
@@ -172,9 +207,8 @@ namespace WeatherApplication.FileHandlers
                 }
             }
             catch (Exception ex)
-            {   
+            {
                 logger.LogError($"Decryption error: {ex.Message}");
-                // Handle any errors that occur during decryption.
                 Console.WriteLine($"Decryption error: {ex.Message}");
                 throw;
             }
