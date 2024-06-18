@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using WeatherApplication.Controllers;
 using WeatherApplication.FileHandlers;
+using WeatherApplication.Models;
 using WeatherApplication.Services;
 using WeatherApplication.Views;
 

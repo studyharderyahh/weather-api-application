@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WeatherApplication.FileHandlers;
+using WeatherApplication.Models;
 using WeatherApplication.Views;
 
 namespace WeatherApplication.Controllers
@@ -27,7 +28,7 @@ namespace WeatherApplication.Controllers
             try
             {
                 //I passed tidesBaseUrl from the Main program
-                m_tidesData = await m_tidesModel.GetTidesData(lat, lon, apiKey, startDate, endDate, tidesBaseUrl);
+                m_tidesData = await m_tidesModel.GetTidesDataAsync(lat, lon, apiKey, startDate, endDate, tidesBaseUrl);
                 m_tidesView.Render(m_tidesData);
             }
             catch (ArgumentException ex)
