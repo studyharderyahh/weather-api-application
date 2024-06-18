@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NLog.Config;
 using WeatherApplication.APIHelpers;
 using WeatherApplication.FileHandlers;
 
@@ -12,23 +13,12 @@ namespace WeatherApplication.Models
     {
         private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance;
         private readonly Logger logger = Logger.Instance();
+        private readonly ITidesDataFactory tidesFactory;
+        public event EventHandler<string> ProgressUpdated;
 
-        // Factory method to create TidesData object
-        public TidesData CreateTidesData(double lat, double lon, DateTime startDate, DateTime endDate)
+        public TidesModel(ITidesDataFactory factory)
         {
-            return new TidesData
-            {
-                Metadata = new Metadata
-                {
-                    Latitude = lat,
-                    Longitude = lon,
-                    Datum = "MSL",
-                    Start = startDate,
-                    Days = (int)(endDate - startDate).TotalDays + 1,
-                    Interval = 0,
-                    Height = "MSL = 0m"
-                }
-            };
+            tidesFactory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         // Nested class to represent tides data structure
@@ -68,7 +58,7 @@ namespace WeatherApplication.Models
                 throw new ArgumentException("API key cannot be null or empty.");
             }
 
-            TidesData tidesData = CreateTidesData(lat, lon, startDate, endDate);
+            TidesData tidesData = tidesFactory.CreateTidesData(lat, lon, startDate, endDate);
             DateTime currentDate = startDate;
             string resultMessage = "";
 
@@ -78,7 +68,7 @@ namespace WeatherApplication.Models
                 string year = currentDate.Year.ToString();
                 string month = currentDate.Month.ToString("D2");
                 string filename = $"tides_{year}_{month}.json";
-                resultMessage += $"Downloading {currentDate:MMM} {year} into {filename}\n";
+                ProgressUpdated?.Invoke(this, $"Downloading {currentDate:MMM} {year} into {filename}");
 
 
                 // Calculate the number of days in the current month													

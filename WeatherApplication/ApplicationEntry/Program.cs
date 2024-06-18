@@ -161,10 +161,11 @@ namespace WeatherApplication.ApplicationEntry
             Console.WriteLine("   NIWA - TIDE API Data ");
             Console.WriteLine("-----------------------------\n");
 
-            // Create instances of the weather model, view, and controller
-            var tidesService = new TidesModel();
-            var tidesView = new TidesView();
-            var tidesController = new TidesController(tidesService, tidesView);
+            // Create instances of the tides factory, model, view, and controller
+            ITidesDataFactory tidesDataFactory = new TidesDataFactory();
+            var tidesModel = new TidesModel(tidesDataFactory);
+            var tidesView = new TidesView(tidesModel);
+            var tidesController = new TidesController(tidesModel, tidesView);
 
             // Define the latitude, longitude, start and end dates for the tide data request
             double tideLat = -37.406;

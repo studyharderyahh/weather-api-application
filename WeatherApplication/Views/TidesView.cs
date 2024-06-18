@@ -6,6 +6,16 @@ namespace WeatherApplication.Views
 {
     public class TidesView
     {
+
+        public TidesView(TidesModel tidesModel)
+        {
+            tidesModel.ProgressUpdated += HandleProgressUpdate;
+        }
+
+        private void HandleProgressUpdate(object sender, string message)
+        {
+            Console.WriteLine(message); // Display progress in console
+        }
         /// <summary>
         /// Renders the tide data including metadata and values.
         /// </summary>
@@ -24,7 +34,7 @@ namespace WeatherApplication.Views
         /// <param name="tideData">The tide data containing metadata.</param>
         private void RenderMetadata(TidesModel.TidesData tideData)
         {
-            Console.WriteLine("Metadata:");
+            Console.WriteLine("\nMetadata:");
             Console.WriteLine($"Latitude: {tideData.Metadata.Latitude}");
             Console.WriteLine($"Longitude: {tideData.Metadata.Longitude}");
             Console.WriteLine($"Datum: {tideData.Metadata.Datum}");
