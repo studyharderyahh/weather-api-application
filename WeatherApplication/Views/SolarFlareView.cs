@@ -57,7 +57,8 @@ namespace WeatherApplication.Views
             Console.WriteLine($"Class Type: {flare.ClassType}");
             Console.WriteLine($"Source Location: {flare.SourceLocation}");
             Console.WriteLine($"Active Region Number: {flare.ActiveRegionNumber}");
-            Console.WriteLine(); // Add a blank line for readability
+            // Add a blank line for readability
+            Console.WriteLine(); 
         }
     }
 }

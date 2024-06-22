@@ -208,9 +208,10 @@ namespace WeatherApplication.ApplicationEntry
             Console.WriteLine("   NIWA - UV Index API Data ");
             Console.WriteLine("-----------------------------\n");
 
+            HttpClient httpClient = new HttpClient();
             // Set up dependency injection for UV service components
             var uvServiceProvider = new ServiceCollection()
-                .AddSingleton<UVService>(provider => new UVService(uvApiKey, uvBaseUrl))
+                .AddSingleton<UVService>(provider => new UVService(uvApiKey, uvBaseUrl, httpClient))
                 .AddSingleton<UVController>()
                 .AddSingleton<UVView>()
                 .BuildServiceProvider();

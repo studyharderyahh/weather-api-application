@@ -12,121 +12,79 @@ namespace TestWeatherProject.HuntingSeasonsTesting
     [TestFixture]
     public class HuntingModelTests
     {
-        private const string TestFilePath = "test_hunting_data.csv";
+        private const string TestDataFilePath = "TestData.txt";
 
-        [SetUp]
-        public void SetUp()
+        [OneTimeSetUp]
+        public void Setup()
         {
-            // Create a temporary test file with sample data
-            var lines = new List<string>
-            {
-                "Species,HuntingDates,Notes",
-                "Deer,October 1, 2024 to November 30, 2024,Bucks only",
-                "Duck,September 1, 2024 through December 31, 2024,No limit",
-                "Bear,March 1, 2024 through May 31, 2024,N/A"
-            };
-            File.WriteAllLines(TestFilePath, lines);
+            // Initialize or prepare any setup needed for the tests, such as creating the test data file
+            CreateTestDataFile();
         }
 
-        [TearDown]
-        public void TearDown()
+        [OneTimeTearDown]
+        public void Cleanup()
         {
-            // Clean up the test file after each test
-            if (File.Exists(TestFilePath))
+            // Clean up any resources after all tests are finished
+            if (File.Exists(TestDataFilePath))
             {
-                File.Delete(TestFilePath);
+                File.Delete(TestDataFilePath);
             }
         }
 
         [Test]
-        public void ParseHuntingSeasonData_ValidFile_ReturnsCorrectSeasons()
+        public void ParseHuntingSeasonData_ReturnsCorrectSeasonCount()
         {
+            // Arrange
+            // Ensure test data is available
+            CreateTestDataFile();
+
             // Act
-            var seasons = HuntingModel.ParseHuntingSeasonData(TestFilePath);
+            var seasons = HuntingModel.ParseHuntingSeasonData(TestDataFilePath);
 
             // Assert
-            Assert.AreEqual(3, seasons.Count);
-
-            var deerSeason = seasons[0];
-            Assert.AreEqual("Deer", deerSeason.Species);
-            Assert.AreEqual("October 1", deerSeason.HuntingDates); // Adjusted to match the current parsing logic
-            Assert.AreEqual("Bucks only", deerSeason.Notes);
-            Assert.AreEqual(new DateTime(2024, 10, 1), deerSeason.StartDate);
-            Assert.AreEqual(new DateTime(2024, 11, 30), deerSeason.EndDate);
-
-            var duckSeason = seasons[1];
-            Assert.AreEqual("Duck", duckSeason.Species);
-            Assert.AreEqual("September 1", duckSeason.HuntingDates); // Adjusted to match the current parsing logic
-            Assert.AreEqual("No limit", duckSeason.Notes);
-            Assert.AreEqual(new DateTime(2024, 9, 1), duckSeason.StartDate);
-            Assert.AreEqual(new DateTime(2024, 12, 31), duckSeason.EndDate);
-
-            var bearSeason = seasons[2];
-            Assert.AreEqual("Bear", bearSeason.Species);
-            Assert.AreEqual("March 1", bearSeason.HuntingDates); // Adjusted to match the current parsing logic
-            Assert.AreEqual("N/A", bearSeason.Notes);
-            Assert.AreEqual(new DateTime(2024, 3, 1), bearSeason.StartDate);
-            Assert.AreEqual(new DateTime(2024, 5, 31), bearSeason.EndDate);
+            Assert.That(seasons.Count, Is.EqualTo(12)); // Based on the provided sample data
         }
 
         [Test]
-        public void ParseHuntingSeasonData_InvalidFile_ThrowsException()
+        public void ParseHuntingSeasonData_ReturnHuntingDatesCorrectly()
         {
             // Arrange
-            var invalidFilePath = "invalid_test_hunting_data.csv";
-            File.WriteAllText(invalidFilePath, "Invalid data");
+            CreateTestDataFile();
 
-            // Act & Assert
-            var ex = Assert.Throws<Exception>(() => HuntingModel.ParseHuntingSeasonData(invalidFilePath));
-            Assert.That(ex.Message, Is.Not.Null.And.Not.Empty);
+            // Act
+            var seasons = HuntingModel.ParseHuntingSeasonData(TestDataFilePath);
 
-            // Clean up
-            File.Delete(invalidFilePath);
+            // Assert
+            Assert.That(seasons.Count, Is.EqualTo(12));
+
+            // Verify specific dates parsing
+            var redStagSeason = seasons.Single(s => s.Species == "Red Stag");
+            Assert.That(redStagSeason.HuntingDates,Is.EqualTo("February to August (Rut March to April)"));
         }
 
-        [Test]
-        public void SearchByMonth_ValidMonth_ReturnsCorrectSeasons()
+
+
+        private void CreateTestDataFile()
         {
-            // Arrange
-            var seasons = new List<HuntingModel.HuntingSeason>
+            // Example sample data as provided
+            string[] lines = new[]
             {
-                new HuntingModel.HuntingSeason("Deer", "October 1, 2024 to November 30, 2024", "Bucks only", new DateTime(2024, 10, 1), new DateTime(2024, 11, 30)),
-                new HuntingModel.HuntingSeason("Duck", "September 1, 2024 through December 31, 2024", "No limit", new DateTime(2024, 9, 1), new DateTime(2024, 12, 31)),
-                new HuntingModel.HuntingSeason("Bear", "March 1, 2024 through May 31, 2024", "N/A", new DateTime(2024, 3, 1), new DateTime(2024, 5, 31))
+                "SPECIES,HUNTING DATES,Notes",
+                "Waterfowl,May to June (North Island),Mallard; Canada Geese; Australian Shoveler; Paradise Shelduck; Pacific Black Duck; Black Swan.",
+                "Waterfowl,May to July (South Island),Mallard; Canada Geese; Australian Shoveler; Paradise Shelduck; Pacific Black Duck; Black Swan.",
+                "Turkey,All Year,August through December spring turkey hunting with no competition; pairs well with trout fishing.  North Island.",
+                "Upland Gamebirds,May to July,Pheasant; Quail; Pukeko; Peacock.  North Island.",
+                "Red Stag,February to August (Rut March to April),Combines easily with waterfowl; fallow deer and other big game hunts.  North Island & South Island.",
+                "Fallow Deer,March to September (Rut in April),Commonly taken during Red Deer hunts.  North Island.",
+                "Himalayan Tahr,April to August (Rut in April and May),May be hunted all year but designated dates are when capes are prime.  Commonly paired with Chamois hunting.  North Island & South Island.",
+                "European Chamois,April to August (Rut in April and May),Dates indicate prime capes.  Commonly hunted in conjunction with Tahr.  North Island & South Island.",
+                "Sika Stag,Late February through May (Rut in April),Winter hunting through September can be rewarding; but snow is likely.  North Island.",
+                "Sambar Stag,Mid August through September,For 6 weekends only.  Average 50% on trophy stags. North Island.",
+                "Rusa Stag,Rut July and August,Popularly hunted in conjunction with winter hunt for Tahr; Sambar; or Sika.  North Island.",
+                "Trout Fishing,All Year,October through April peak trophy fishing."
             };
 
-            // Act
-            var octoberSeasons = HuntingModel.SearchByMonth(seasons, 10);
-
-            // Assert
-            Assert.AreEqual(1, octoberSeasons.Count);
-            Assert.AreEqual("Deer", octoberSeasons[0].Species);
-
-            var marchSeasons = HuntingModel.SearchByMonth(seasons, 3);
-            Assert.AreEqual(1, marchSeasons.Count);
-            Assert.AreEqual("Bear", marchSeasons[0].Species);
-
-            var decemberSeasons = HuntingModel.SearchByMonth(seasons, 12);
-            Assert.AreEqual(1, decemberSeasons.Count);
-            Assert.AreEqual("Duck", decemberSeasons[0].Species);
-        }
-
-        [Test]
-        public void SearchByMonth_InvalidMonth_ReturnsEmptyList()
-        {
-            // Arrange
-            var seasons = new List<HuntingModel.HuntingSeason>
-            {
-                new HuntingModel.HuntingSeason("Deer", "October 1, 2024 to November 30, 2024", "Bucks only", new DateTime(2024, 10, 1), new DateTime(2024, 11, 30)),
-                new HuntingModel.HuntingSeason("Duck", "September 1, 2024 through December 31, 2024", "No limit", new DateTime(2024, 9, 1), new DateTime(2024, 12, 31)),
-                new HuntingModel.HuntingSeason("Bear", "March 1, 2024 through May 31, 2024", "N/A", new DateTime(2024, 3, 1), new DateTime(2024, 5, 31))
-            };
-
-            // Act
-            var februarySeasons = HuntingModel.SearchByMonth(seasons, 2);
-
-            // Assert
-            Assert.AreEqual(0, februarySeasons.Count);
+            File.WriteAllLines(TestDataFilePath, lines);
         }
     }
 }

@@ -22,11 +22,11 @@ namespace WeatherApplication.Services
         private const string BaseUrlNullMessage = "Base URL cannot be null";
         private const string ErrorMessage = "Error fetching data from API";
 
-        public UVService(string apiKey, string baseUrl)
+        public UVService(string apiKey, string baseUrl, HttpClient httpClient)
         {
             uvIndexApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey), ApiKeyNullMessage);
             uvIndexBaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl), BaseUrlNullMessage);
-            httpClient = new HttpClient();
+            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         public async Task<UVModel> GetUVDataAsync(double latitude, double longitude)

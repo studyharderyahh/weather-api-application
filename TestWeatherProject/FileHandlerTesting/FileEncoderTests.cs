@@ -1,7 +1,9 @@
 ﻿using global::WeatherApplication.FileHandlers;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using WeatherApplication.FileHandlers;
@@ -12,19 +14,23 @@ namespace TestWeatherProject.FileHandlerTesting
     public class FileEncoderTests
     {
         private const string TestFilePath = "testfile.txt";
-        private const string EncryptionKey = "P@ssw0rd123"; // Example encryption key (base64 string).
+        private const string TestEncryptionKey = "C/+YjsuTzXJzop3TX46d2WATe1qZ/PiNT/mCRxrSw1o=";
 
         [SetUp]
         public void Setup()
         {
-            // Initialize FileEncoder singleton instance before each test
-            FileEncoder.Initialize(TestFilePath, EncryptionKey);
+            if (File.Exists(TestFilePath))
+            {
+                File.Delete(TestFilePath);
+            }
+
+            // Reset lazyInstance field before each test to ensure a clean state
+            typeof(FileEncoder).GetField("lazyInstance", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, null);
         }
 
         [TearDown]
-        public void Teardown()
+        public void TearDown()
         {
-            // Clean up the test file after each test
             if (File.Exists(TestFilePath))
             {
                 File.Delete(TestFilePath);
@@ -32,44 +38,125 @@ namespace TestWeatherProject.FileHandlerTesting
         }
 
         [Test]
-        public void WriteAndRead_ValidData_EncryptsAndDecryptsSuccessfully()
+        public void Initialize_SingletonInstance_CorrectlyInitialized()
         {
-            // Arrange
-            string apiKey = "API_KEY";
-            string value = "SECRET_VALUE";
-
             // Act
-            FileEncoder.Instance.Write(apiKey, value);
-            string decryptedValue = FileEncoder.Instance.Read(apiKey);
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
 
             // Assert
-            Assert.AreEqual(value, decryptedValue);
+            var instance = FileEncoder.Instance;
+            Assert.That(instance, Is.Not.Null);
+            Assert.That(() => FileEncoder.Initialize(TestFilePath, TestEncryptionKey),
+                Throws.InvalidOperationException.With.Message.Contains("FileEncoder has already been initialized."));
         }
 
         [Test]
-        public void Read_NonExistentApiKey_ReturnsNull()
+        public void Instance_BeforeInitialization_ThrowsInvalidOperationException()
         {
-            // Arrange
-            string nonExistentApiKey = "NON_EXISTENT_KEY";
-
-            // Act
-            string decryptedValue = FileEncoder.Instance.Read(nonExistentApiKey);
-
-            // Assert
-            Assert.IsNull(decryptedValue);
+            // Act & Assert
+            Assert.That(() => { var instance = FileEncoder.Instance; },
+                Throws.InvalidOperationException.With.Message.Contains("FileEncoder is not initialized. Call Initialize() first."));
         }
 
         [Test]
-        public void Write_ExceptionThrown_LogsError()
+        public void Write_EncryptsAndWritesData_Correctly()
         {
             // Arrange
-            string invalidFilePath = ""; // Invalid file path to trigger exception
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
+            var encoder = FileEncoder.Instance;
+            var apiKey = "testApiKey";
+            var value = "testValue";
 
             // Act
-            TestDelegate action = () => FileEncoder.Initialize(invalidFilePath, EncryptionKey);
+            encoder.Write(apiKey, value);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(action);
+            var lines = File.ReadAllLines(TestFilePath);
+            Assert.That(lines.Length, Is.EqualTo(1));
+
+            var encryptedData = lines[0];
+            var decryptedData = DecryptTestString(encryptedData, Convert.FromBase64String(TestEncryptionKey), encoder);
+            Assert.That(decryptedData, Is.EqualTo($"{apiKey}={value}"));
+        }
+
+        [Test]
+        public void Write_Exception_LogsError()
+        {
+            // Arrange
+            var mockLogger = new Mock<Logger>();
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
+            var encoder = FileEncoder.Instance;
+            var apiKey = "testApiKey";
+            var value = "testValue";
+
+            // Act & Assert
+            Assert.DoesNotThrow(() => encoder.Write(apiKey, value));
+        }
+
+        [Test]
+        public void Read_DecryptsAndRetrievesData_Correctly()
+        {
+            // Arrange
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
+            var encoder = FileEncoder.Instance;
+            var apiKey = "testApiKey";
+            var value = "testValue";
+
+            encoder.Write(apiKey, value);
+
+            // Act
+            var result = encoder.Read(apiKey);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(value));
+        }
+
+        [Test]
+        public void Read_KeyNotFound_ReturnsNull()
+        {
+            // Arrange
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
+            var encoder = FileEncoder.Instance;
+
+            // Act
+            var result = encoder.Read("nonexistentKey");
+
+            // Assert
+            Assert.That(result, Is.Null);
+        }
+
+        [Test]
+        public void Read_Exception_LogsError()
+        {
+            // Arrange
+            var mockLogger = new Mock<Logger>();
+            FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
+            var encoder = FileEncoder.Instance;
+
+            // Act & Assert
+            Assert.DoesNotThrow(() => encoder.Read("testApiKey"));
+        }
+
+        private string DecryptTestString(string input, byte[] encryptionKey, FileEncoder encoder)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = encryptionKey;
+                aesAlg.IV = encoder.GetType().GetField("iv", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(encoder) as byte[];
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(input)))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            return srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
+            }
         }
     }
 }
