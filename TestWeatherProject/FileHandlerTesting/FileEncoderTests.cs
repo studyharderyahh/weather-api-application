@@ -65,7 +65,7 @@ namespace TestWeatherProject.FileHandlerTesting
             FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
             var encoder = FileEncoder.Instance;
             var apiKey = "testApiKey";
-            var value = "testValue";
+            var value = "a173994356f879bb3e42AmazingGrace";
 
             // Act
             encoder.Write(apiKey, value);
@@ -87,7 +87,7 @@ namespace TestWeatherProject.FileHandlerTesting
             FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
             var encoder = FileEncoder.Instance;
             var apiKey = "testApiKey";
-            var value = "testValue";
+            var value = "a173994356f879bb3e42275PraiseHim";
 
             // Act & Assert
             Assert.DoesNotThrow(() => encoder.Write(apiKey, value));
@@ -100,7 +100,7 @@ namespace TestWeatherProject.FileHandlerTesting
             FileEncoder.Initialize(TestFilePath, TestEncryptionKey);
             var encoder = FileEncoder.Instance;
             var apiKey = "testApiKey";
-            var value = "testValue";
+            var value = "a173994356f879bb3e422754123456";
 
             encoder.Write(apiKey, value);
 

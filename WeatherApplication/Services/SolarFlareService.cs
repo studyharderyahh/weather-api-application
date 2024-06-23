@@ -10,11 +10,11 @@ namespace WeatherApplication.Services
 {
     public class SolarFlareService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient httpClient;
 
-        public SolarFlareService()
+        public SolarFlareService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
+            httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         public async Task<List<SolarFlareModel>> GetFlaresAsync(string startDate, string endDate, string apiKey, string solarFlareBaseUrl)
@@ -23,7 +23,7 @@ namespace WeatherApplication.Services
             {
                 //var apiUrl = $"https://api.nasa.gov/DONKI/FLR?startDate={startDate}&endDate={endDate}&api_key={apiKey}";
                 var solarFlareApiUrl = $"{solarFlareBaseUrl}{startDate}&endDate={endDate}&api_key={apiKey}";
-                var response = await _httpClient.GetAsync(solarFlareApiUrl);
+                var response = await httpClient.GetAsync(solarFlareApiUrl);
                 response.EnsureSuccessStatusCode();
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
