@@ -4,18 +4,31 @@ using WeatherApplication.Models;
 
 namespace WeatherApplication.Views
 {
+    /// <summary>
+    /// View class responsible for rendering tide data.
+    /// </summary>
     public class TidesView
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TidesView"/> class.
+        /// </summary>
+        /// <param name="tidesModel">Instance of TidesModel to subscribe to progress updates.</param>
         public TidesView(TidesModel tidesModel)
         {
+            // Subscribe to the ProgressUpdated event of TidesModel
             tidesModel.ProgressUpdated += HandleProgressUpdate;
         }
 
+        /// <summary>
+        /// Handles progress update events from TidesModel and displays them in the console.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="message">The progress message to display.</param>
         private void HandleProgressUpdate(object sender, string message)
         {
             Console.WriteLine(message); // Display progress in console
         }
+
         /// <summary>
         /// Renders the tide data including metadata and values.
         /// </summary>

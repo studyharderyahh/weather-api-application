@@ -10,10 +10,19 @@ using WeatherApplication.Views;
 
 namespace WeatherApplication.ApplicationEntry
 {
+    /// <summary>
+    /// Entry point for the Weather Application.
+    /// Initializes configuration, services, and starts the application.
+    /// </summary>
     class Program
     {
+        // Singleton logger instance to log application activities
         public static Logger logger = Logger.Instance("Logs/application.log");
 
+        /// <summary>
+        /// Main method of the application.
+        /// Initializes configuration, services, and handles the application's main workflow.
+        /// </summary>
         static async Task Main(string[] args)
         {
             logger.LogInfo("Application started.");
@@ -42,6 +51,11 @@ namespace WeatherApplication.ApplicationEntry
             logger.LogInfo("Application finished.");
         }
 
+        /// <summary>
+        /// Checks if the configuration file exists at the specified path.
+        /// </summary>
+        /// <param name="filePath">Path to the configuration file.</param>
+        /// <returns>True if the file exists, false otherwise.</returns>
         private static bool CheckConfigFileExists(string filePath)
         {
             if (!File.Exists(filePath))
@@ -53,6 +67,11 @@ namespace WeatherApplication.ApplicationEntry
             return true;
         }
 
+        /// <summary>
+        /// Initializes the configuration file reader.
+        /// </summary>
+        /// <param name="configFilePath">Path to the configuration file.</param>
+        /// <returns>An instance of ConfigFileReader if successful, null otherwise.</returns>
         private static ConfigFileReader InitializeConfigReader(string configFilePath)
         {
             try
@@ -68,6 +87,11 @@ namespace WeatherApplication.ApplicationEntry
             }
         }
 
+        /// <summary>
+        /// Initializes the file encoder with encryption key from the config.
+        /// </summary>
+        /// <param name="configReader">Instance of ConfigFileReader.</param>
+        /// <returns>An instance of FileEncoder if successful, null otherwise.</returns>
         private static FileEncoder InitializeFileEncoder(ConfigFileReader configReader)
         {
             try
@@ -83,6 +107,11 @@ namespace WeatherApplication.ApplicationEntry
             }
         }
 
+        /// <summary>
+        /// Processes the APIs using the provided config reader and file encoder.
+        /// </summary>
+        /// <param name="configReader">Instance of ConfigFileReader.</param>
+        /// <param name="encoder">Instance of FileEncoder.</param>
         private static async Task ProcessAPIs(ConfigFileReader configReader, FileEncoder encoder)
         {
             string weatherApiKey = GetApiKey("WeatherApiKey", configReader, encoder);
@@ -102,12 +131,25 @@ namespace WeatherApplication.ApplicationEntry
             await DisplaySolarFlareData(solarFlareApiKey, configReader.GetKeyValue("SolarFlareBaseUrl"));
         }
 
+        /// <summary>
+        /// Retrieves the API key from the configuration and writes it to the encoder.
+        /// </summary>
+        /// <param name="keyName">Name of the API key.</param>
+        /// <param name="configReader">Instance of ConfigFileReader.</param>
+        /// <param name="encoder">Instance of FileEncoder.</param>
+        /// <returns>The API key.</returns>
         private static string GetApiKey(string keyName, ConfigFileReader configReader, FileEncoder encoder)
         {
             encoder.Write(keyName, configReader.GetKeyValue(keyName));
             return encoder.Read(keyName);
         }
 
+        /// <summary>
+        /// Prompts the user to enter an API key if it is not found or invalid.
+        /// </summary>
+        /// <param name="apiName">Name of the API.</param>
+        /// <param name="apiKey">The API key.</param>
+        /// <param name="encoder">Instance of FileEncoder.</param>
         private static void PromptForApiKey(string apiName, string apiKey, FileEncoder encoder)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -124,16 +166,20 @@ namespace WeatherApplication.ApplicationEntry
             }
         }
 
+        /// <summary>
+        /// Retrieves and displays weather data using the Weather API.
+        /// </summary>
+        /// <param name="apiKey">The Weather API key.</param>
+        /// <param name="weatherBaseUrl">Base URL for the Weather API.</param>
         private static async Task DisplayWeatherData(string apiKey, string weatherBaseUrl)
         {
-
             logger.LogInfo("Fetching Open Weather API Data");
             Console.WriteLine("\n-----------------------------");
             Console.WriteLine("   Open Weather API Data ");
             Console.WriteLine("-----------------------------\n");
 
             // Create instances of the weather model, view, and controller
-            var weatherService = new WeatherModel(apiKey);
+            var weatherService = new WeatherModel();
             var weatherView = new WeatherApplicationView();
             var weatherController = new WeatherAPIController(weatherService, weatherView);
 
@@ -152,10 +198,13 @@ namespace WeatherApplication.ApplicationEntry
             weatherController.RefreshPanelView();
         }
 
-        // Method to download tide data
+        /// <summary>
+        /// Downloads tide data using the Tide API.
+        /// </summary>
+        /// <param name="tideApiKey">The Tide API key.</param>
+        /// <param name="tidesBaseUrl">Base URL for the Tide API.</param>
         private static async Task DownloadTideData(string tideApiKey, string tidesBaseUrl)
         {
-
             logger.LogInfo("Fetching NIWA Tide API Data");
             Console.WriteLine("\n-----------------------------");
             Console.WriteLine("   NIWA - TIDE API Data ");
@@ -172,14 +221,14 @@ namespace WeatherApplication.ApplicationEntry
             double tideLon = 175.947;
             DateTime tideStartDate = new DateTime(2023, 01, 01);
             DateTime tideEndDate = new DateTime(2023, 12, 31);
-            DateTime currentDate = tideStartDate;
 
-            // RefreshTidesData(double lat, double lon, string apiKey, DateTime startDate, DateTime endDate)
+            // Retrieve and display tide data
             await tidesController.RefreshTidesData(tideLat, tideLon, tideApiKey, tideStartDate, tideEndDate, tidesBaseUrl);
-
         }
 
-        // Method to load and display hunting season data
+        /// <summary>
+        /// Loads and displays hunting season data.
+        /// </summary>
         private static void DisplayHuntingSeasonData()
         {
             logger.LogInfo("Fetching NIWA Hunting Seasons API Data");
@@ -199,10 +248,13 @@ namespace WeatherApplication.ApplicationEntry
             huntingController.LoadAndDisplayHuntingSeasonData(huntingFilePath);
         }
 
-        // Method to display UV Index data
+        /// <summary>
+        /// Displays UV Index data using the UV Index API.
+        /// </summary>
+        /// <param name="uvApiKey">The UV Index API key.</param>
+        /// <param name="uvBaseUrl">Base URL for the UV Index API.</param>
         private static async Task DisplayUVIndexData(string uvApiKey, string uvBaseUrl)
         {
-
             logger.LogInfo("Fetching NIWA - UV Index API Data");
             Console.WriteLine("\n-----------------------------");
             Console.WriteLine("   NIWA - UV Index API Data ");
@@ -220,7 +272,7 @@ namespace WeatherApplication.ApplicationEntry
             var uvController = uvServiceProvider.GetService<UVController>();
             var uvView = uvServiceProvider.GetService<UVView>();
 
-            //  Get latitude and longitude from user input or use default values
+            // Get latitude and longitude from user input or use default values
             double uvLat = -39.0;
             double uvLong = 174.0;
 
@@ -244,7 +296,11 @@ namespace WeatherApplication.ApplicationEntry
             uvView.DisplayUVData(uvModel);
         }
 
-        // Method to display solar flare data
+        /// <summary>
+        /// Displays solar flare data using the Solar Flare API.
+        /// </summary>
+        /// <param name="solarFlareApiKey">The Solar Flare API key.</param>
+        /// <param name="solarFlareBaseUrl">Base URL for the Solar Flare API.</param>
         private static async Task DisplaySolarFlareData(string solarFlareApiKey, string solarFlareBaseUrl)
         {
             logger.LogInfo("Fetching NASA - Solar Flare Index API Data");

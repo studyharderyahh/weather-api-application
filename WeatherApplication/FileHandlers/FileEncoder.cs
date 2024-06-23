@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -97,6 +96,7 @@ namespace WeatherApplication.FileHandlers
             {
                 logger.LogError($"Error writing apiKey and its value to file: {ex.Message}");
                 Console.WriteLine($"Error writing apiKey and its value to file: {ex.Message}");
+                throw; // Rethrow the exception to propagate it up the call stack.
             }
         }
 
@@ -128,6 +128,7 @@ namespace WeatherApplication.FileHandlers
             {
                 logger.LogError($"Error reading apiKey and its value from file: {ex.Message}");
                 Console.WriteLine($"Error reading apiKey and its value from file: {ex.Message}");
+                throw; // Rethrow the exception to propagate it up the call stack.
             }
             // Return null if key is not found.
             return null;
@@ -171,7 +172,7 @@ namespace WeatherApplication.FileHandlers
             {
                 logger.LogError($"Encryption error: {ex.Message}");
                 Console.WriteLine($"Encryption error: {ex.Message}");
-                throw;
+                throw; // Rethrow the exception to propagate it up the call stack.
             }
         }
 
@@ -210,7 +211,7 @@ namespace WeatherApplication.FileHandlers
             {
                 logger.LogError($"Decryption error: {ex.Message}");
                 Console.WriteLine($"Decryption error: {ex.Message}");
-                throw;
+                throw; // Rethrow the exception to propagate it up the call stack.
             }
         }
     }

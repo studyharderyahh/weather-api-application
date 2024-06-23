@@ -11,6 +11,9 @@ using System.Net.Http.Headers;
 
 namespace WeatherApplication.Services
 {
+    /// <summary>
+    /// Service class for fetching UV index data from an API.
+    /// </summary>
     public class UVService
     {
         private readonly string uvIndexApiKey;
@@ -20,8 +23,15 @@ namespace WeatherApplication.Services
         private const string ApiKeyHeader = "x-apikey";
         private const string ApiKeyNullMessage = "API key cannot be null";
         private const string BaseUrlNullMessage = "Base URL cannot be null";
-        private const string ErrorMessage = "Error fetching data from API";
+        private const string ErrorMessage = "Error fetching UV data from API";
 
+        /// <summary>
+        /// Initializes a new instance of the UVService class.
+        /// </summary>
+        /// <param name="apiKey">API key required for accessing the UV index API.</param>
+        /// <param name="baseUrl">Base URL of the UV index API.</param>
+        /// <param name="httpClient">HTTP client instance used for making API requests.</param>
+        /// <exception cref="ArgumentNullException">Thrown when apiKey, baseUrl, or httpClient is null.</exception>
         public UVService(string apiKey, string baseUrl, HttpClient httpClient)
         {
             uvIndexApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey), ApiKeyNullMessage);
@@ -29,6 +39,14 @@ namespace WeatherApplication.Services
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
+        /// <summary>
+        /// Retrieves UV index data asynchronously based on the provided latitude and longitude.
+        /// </summary>
+        /// <param name="latitude">Latitude coordinate for the location.</param>
+        /// <param name="longitude">Longitude coordinate for the location.</param>
+        /// <returns>An instance of UVModel containing the UV index data.</returns>
+        /// <exception cref="HttpRequestException">Thrown when an HTTP request fails.</exception>
+        /// <exception cref="JsonException">Thrown when JSON deserialization fails.</exception>
         public async Task<UVModel> GetUVDataAsync(double latitude, double longitude)
         {
             try
@@ -52,13 +70,27 @@ namespace WeatherApplication.Services
                     Console.WriteLine($"{header.Key}: {string.Join(",", header.Value)}");
                 } */
 
+                // Deserialize JSON response into UVModel object
                 var uvModel = JsonConvert.DeserializeObject<UVModel>(jsonResponse);
                 return uvModel;
             }
-            catch(Exception ex)
+            catch (HttpRequestException ex)
             {
+                // Handle HTTP request failure
                 Console.WriteLine($"{ErrorMessage}: {ex.Message}");
-                return null;
+                throw new HttpRequestException(ErrorMessage, ex);
+            }
+            catch (JsonException ex)
+            {
+                // Handle JSON deserialization error
+                Console.WriteLine($"JSON deserialization error: {ex.Message}");
+                throw new JsonException("Error parsing UV data JSON response", ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"{ErrorMessage}: {ex.Message}");
+                throw;
             }
         }
     }

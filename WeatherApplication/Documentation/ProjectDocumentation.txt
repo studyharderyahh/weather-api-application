@@ -1,0 +1,99 @@
+﻿Overview
+
+The Weather Application is a C#-based application designed to fetch and display weather-related data from various APIs. 
+It includes features to check current weather conditions, hunting season information, tide information, and more. 
+The application follows the MVC (Model-View-Controller) design pattern to maintain a clear separation of concerns, making it easier to manage, extend, and maintain.
+
+Features
+
+ -- Weather Information: Fetches and displays current weather conditions.
+ -- Hunting Season Information: Provides information about the hunting season.
+ -- Tide Information: Displays tide data for specific locations.
+ -- Solar Flare Information: Fetches and displays solar flare data.
+ -- UV Index: Provides information about the UV index.
+
+Project Structure
+
+The project is structured following the MVC pattern, with additional use of design patterns like Singleton, Factory, and Repository to manage different aspects of the application.
+
+Models
+
+Models represent the data structure of the application. They handle data logic and business rules.
+
+ -- WeatherModel: Manages weather data.
+ -- HuntingSeasonModel: Handles data related to the hunting season.
+ -- TideModel: Manages tide data.
+ -- UVModel: Handles data related to the UV index.
+ -- SolarFlareModel: Manages solar flare data.
+
+Views
+
+Views are responsible for displaying data to the user. They render the user interface.
+
+ -- WeatherView: Displays weather information.
+ -- HuntingSeasonView: Displays hunting season information.
+ -- TideView: Displays tide information.
+ -- UVView: Displays UV index information.
+ -- SolarFlareView: Displays solar flare data.
+
+Controllers
+
+Controllers handle user input and update the model and view accordingly.
+
+ -- WeatherController: Manages interactions between WeatherModel and WeatherView.
+ -- HuntingSeasonController: Manages interactions between HuntingSeasonModel and HuntingSeasonView.
+ -- TideController: Manages interactions between TideModel and TideView.
+ -- UVController: Manages interactions between UVModel and UVView.
+ -- SolarFlareController: Manages interactions between SolarFlareModel and SolarFlareView.
+
+Utility Classes
+
+Utility classes provide additional functionalities such as logging and file encoding.
+
+    Logger: Implements the Singleton pattern to provide a single instance for logging throughout the application.
+    FileEncoder: Provides methods to encode and decode data to and from a file.
+
+Design Patterns
+Singleton Pattern
+
+    Used In: Logger, FileEncoder
+    Purpose: Ensures a class has only one instance and provides a global point of access to it.
+
+Factory Pattern (in progress)
+
+    Used In: View rendering
+    Purpose: Creates instances of view objects to abstract the instantiation logic from the client.
+
+Repository Pattern (in progress)
+
+    Used In: Data handling in models
+    Purpose: Encapsulates data access logic, providing a centralized interface for data operations.
+
+How to Run
+
+    Clone the Repository: Clone the project repository to your local machine.
+    Build the Solution: Open the solution in Visual Studio and build the project.
+    Run the Application: Start the application from Visual Studio.
+
+Testing
+
+The project includes unit tests for critical components using NUnit. The tests are located in the TestWeatherProject directory.
+
+Running Tests
+
+    Open Test Explorer: In Visual Studio, open the Test Explorer (Test > Windows > Test Explorer).
+    Run All Tests: Click "Run All" to execute all the unit tests.
+
+
+Contributing
+
+    If you wish to contribute to the project, please fork the repository and submit a pull request with your changes. 
+    Ensure your code follows the project’s coding standards and include appropriate tests.
+
+License
+
+    This project is licensed under the MIT License.
+
+Contact
+
+    For any questions or issues, please contact the project maintainer.

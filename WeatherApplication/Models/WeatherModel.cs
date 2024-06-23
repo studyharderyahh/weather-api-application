@@ -8,28 +8,44 @@ using WeatherApplication.APIHelpers;
 
 namespace WeatherApplication
 {
+    /// <summary>
+    /// Represents a model for retrieving weather data from an API.
+    /// </summary>
     public class WeatherModel
     {
-        private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance; 
-        private readonly string m_apiKey;
+        private readonly HttpClientWrapper m_httpClient = HttpClientWrapper.Instance;
 
-        public WeatherModel(string apiKey)
+        /// <summary>
+        /// Initializes a new instance of the WeatherModel class with the specified API key.
+        /// </summary>
+        /// <param name="apiKey">The API key for accessing the weather data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when apiKey is null.</exception>
+        public WeatherModel()
         {
-            m_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+            //m_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         }
 
+        /// <summary>
+        /// Retrieves weather data asynchronously for a specified city.
+        /// </summary>
+        /// <param name="cityName">The name of the city for which weather data is requested.</param>
+        /// <param name="weatherBaseUrl">The base URL of the weather API.</param>
+        /// <returns>A Task representing the asynchronous operation, returning WeatherData.</returns>
+        /// <exception cref="ArgumentException">Thrown when cityName is null or empty.</exception>
+        /// <exception cref="WeatherServiceException">Thrown for various weather service errors, including HTTP and JSON parsing errors.</exception>
         public async Task<WeatherData> GetWeatherAsync(string apiKey, string cityName, string weatherBaseUrl)
         {
             if (string.IsNullOrWhiteSpace(cityName))
             {
                 throw new ArgumentException("City name cannot be null or empty.", nameof(cityName));
             }
+
             try
             {
                 string encodedCityName = Uri.EscapeDataString(cityName);
-                string encodedApiKey = Uri.EscapeDataString(m_apiKey);
-                //string url = $"https://api.openweathermap.org/data/2.5/weather?q={encodedCityName}&appid={encodedApiKey}&units=metric";
+                string encodedApiKey = Uri.EscapeDataString(apiKey);
                 string url = $"{weatherBaseUrl}{encodedCityName}&appid={encodedApiKey}&units=metric";
+
                 HttpResponseMessage response = await m_httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
@@ -53,58 +69,143 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents weather data retrieved from the weather API.
+    /// </summary>
     public class WeatherData
     {
+        /// <summary>
+        /// Gets the coordinates of the location.
+        /// </summary>
         public CoordInfo Coord { get; }
+
+        /// <summary>
+        /// Gets the weather information.
+        /// </summary>
         public List<WeatherInfo> Weather { get; }
+
+        /// <summary>
+        /// Gets the base information.
+        /// </summary>
         public string Base { get; }
+
+        /// <summary>
+        /// Gets the main weather information.
+        /// </summary>
         public MainInfo Main { get; }
+
+        /// <summary>
+        /// Gets the visibility.
+        /// </summary>
         public int Visibility { get; }
+
+        /// <summary>
+        /// Gets the wind information.
+        /// </summary>
         public WindInfo Wind { get; }
+
+        /// <summary>
+        /// Gets the clouds information.
+        /// </summary>
         public CloudsInfo Clouds { get; }
+
+        /// <summary>
+        /// Gets the date and time of data calculation.
+        /// </summary>
         public long Dt { get; }
+
+        /// <summary>
+        /// Gets the sys information.
+        /// </summary>
         public SysInfo Sys { get; }
+
+        /// <summary>
+        /// Gets the timezone offset.
+        /// </summary>
         public int Timezone { get; }
+
+        /// <summary>
+        /// Gets the city ID.
+        /// </summary>
         public int Id { get; }
+
+        /// <summary>
+        /// Gets the city name.
+        /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the response code.
+        /// </summary>
         public int Cod { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the WeatherData class with the provided parameters.
+        /// </summary>
+        /// <param name="coord">The coordinates of the location.</param>
+        /// <param name="weather">The weather information.</param>
+        /// <param name="base">The base information.</param>
+        /// <param name="main">The main weather information.</param>
+        /// <param name="visibility">The visibility.</param>
+        /// <param name="wind">The wind information.</param>
+        /// <param name="clouds">The clouds information.</param>
+        /// <param name="dt">The date and time of data calculation.</param>
+        /// <param name="sys">The sys information.</param>
+        /// <param name="timezone">The timezone offset.</param>
+        /// <param name="id">The city ID.</param>
+        /// <param name="name">The city name.</param>
+        /// <param name="cod">The response code.</param>
         public WeatherData(
-           CoordInfo coord,
-           List<WeatherInfo> weather,
-           string @base,
-           MainInfo main,
-           int visibility,
-           WindInfo wind,
-           CloudsInfo clouds,
-           long dt,
-           SysInfo sys,
-           int timezone,
-           int id,
-           string name,
-           int cod)
+            CoordInfo coord,
+            List<WeatherInfo> weather,
+            string @base,
+            MainInfo main,
+            int visibility,
+            WindInfo wind,
+            CloudsInfo clouds,
+            long dt,
+            SysInfo sys,
+            int timezone,
+            int id,
+            string name,
+            int cod)
         {
             Coord = coord;
-            Weather = weather;
-            Base = @base;
-            Main = main;
+            Weather = weather ?? throw new ArgumentNullException(nameof(weather));
+            Base = @base ?? throw new ArgumentNullException(nameof(@base));
+            Main = main ?? throw new ArgumentNullException(nameof(main));
             Visibility = visibility;
-            Wind = wind;
-            Clouds = clouds;
+            Wind = wind ?? throw new ArgumentNullException(nameof(wind));
+            Clouds = clouds ?? throw new ArgumentNullException(nameof(clouds));
             Dt = dt;
-            Sys = sys;
+            Sys = sys ?? throw new ArgumentNullException(nameof(sys));
             Timezone = timezone;
             Id = id;
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             Cod = cod;
         }
     }
 
+    /// <summary>
+    /// Represents the coordinates of a location.
+    /// </summary>
     public class CoordInfo
     {
+        /// <summary>
+        /// Gets the longitude.
+        /// </summary>
         public double Lon { get; }
+
+        /// <summary>
+        /// Gets the latitude.
+        /// </summary>
         public double Lat { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the CoordInfo class with the provided longitude and latitude.
+        /// </summary>
+        /// <param name="lon">The longitude.</param>
+        /// <param name="lat">The latitude.</param>
         public CoordInfo(double lon, double lat)
         {
             Lon = lon;
@@ -112,13 +213,39 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents weather information.
+    /// </summary>
     public class WeatherInfo
     {
+        /// <summary>
+        /// Gets the weather condition ID.
+        /// </summary>
         public int Id { get; }
+
+        /// <summary>
+        /// Gets the main weather description.
+        /// </summary>
         public string Main { get; }
+
+        /// <summary>
+        /// Gets the detailed weather description.
+        /// </summary>
         public string Description { get; }
+
+        /// <summary>
+        /// Gets the weather icon ID.
+        /// </summary>
         public string Icon { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the WeatherInfo class with the provided parameters.
+        /// </summary>
+        /// <param name="id">The weather condition ID.</param>
+        /// <param name="main">The main weather description.</param>
+        /// <param name="description">The detailed weather description.</param>
+        /// <param name="icon">The weather icon ID.</param>
+        /// <exception cref="ArgumentNullException">Thrown when main, description, or icon is null.</exception>
         public WeatherInfo(int id, string main, string description, string icon)
         {
             Id = id;
@@ -128,15 +255,50 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents main weather information.
+    /// </summary>
     public class MainInfo
     {
+        /// <summary>
+        /// Gets the temperature.
+        /// </summary>
         public double Temp { get; }
+
+        /// <summary>
+        /// Gets the "feels like" temperature.
+        /// </summary>
         public double Feels_like { get; }
+
+        /// <summary>
+        /// Gets the minimum temperature.
+        /// </summary>
         public double Temp_min { get; }
+
+        /// <summary>
+        /// Gets the maximum temperature.
+        /// </summary>
         public double Temp_max { get; }
+
+        /// <summary>
+        /// Gets the atmospheric pressure.
+        /// </summary>
         public int Pressure { get; }
+
+        /// <summary>
+        /// Gets the humidity.
+        /// </summary>
         public int Humidity { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the MainInfo class with the provided parameters.
+        /// </summary>
+        /// <param name="temp">The temperature.</param>
+        /// <param name="feels_like">The "feels like" temperature.</param>
+        /// <param name="temp_min">The minimum temperature.</param>
+        /// <param name="temp_max">The maximum temperature.</param>
+        /// <param name="pressure">The atmospheric pressure.</param>
+        /// <param name="humidity">The humidity.</param>
         public MainInfo(double temp, double feels_like, double temp_min, double temp_max, int pressure, int humidity)
         {
             Temp = temp;
@@ -148,11 +310,26 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents wind information.
+    /// </summary>
     public class WindInfo
     {
+        /// <summary>
+        /// Gets the wind speed.
+        /// </summary>
         public double Speed { get; }
+
+        /// <summary>
+        /// Gets the wind direction in degrees.
+        /// </summary>
         public int Deg { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the WindInfo class with the provided parameters.
+        /// </summary>
+        /// <param name="speed">The wind speed.</param>
+        /// <param name="deg">The wind direction in degrees.</param>
         public WindInfo(double speed, int deg)
         {
             Speed = speed;
@@ -160,24 +337,65 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents cloud information.
+    /// </summary>
     public class CloudsInfo
     {
+        /// <summary>
+        /// Gets the cloudiness percentage.
+        /// </summary>
         public int All { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the CloudsInfo class with the provided cloudiness percentage.
+        /// </summary>
+        /// <param name="all">The cloudiness percentage.</param>
         public CloudsInfo(int all)
         {
             All = all;
         }
     }
 
+    /// <summary>
+    /// Represents sys information.
+    /// </summary>
     public class SysInfo
     {
+        /// <summary>
+        /// Gets the type of sys information.
+        /// </summary>
         public int Type { get; }
+
+        /// <summary>
+        /// Gets the city ID.
+        /// </summary>
         public int Id { get; }
+
+        /// <summary>
+        /// Gets the country code.
+        /// </summary>
         public string Country { get; }
+
+        /// <summary>
+        /// Gets the sunrise time (Unix timestamp).
+        /// </summary>
         public long Sunrise { get; }
+
+        /// <summary>
+        /// Gets the sunset time (Unix timestamp).
+        /// </summary>
         public long Sunset { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the SysInfo class with the provided parameters.
+        /// </summary>
+        /// <param name="type">The type of sys information.</param>
+        /// <param name="id">The city ID.</param>
+        /// <param name="country">The country code.</param>
+        /// <param name="sunrise">The sunrise time (Unix timestamp).</param>
+        /// <param name="sunset">The sunset time (Unix timestamp).</param>
+        /// <exception cref="ArgumentNullException">Thrown when country is null.</exception>
         public SysInfo(int type, int id, string country, long sunrise, long sunset)
         {
             Type = type;
@@ -188,8 +406,17 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Deserializes JSON data into a WeatherData object.
+    /// </summary>
     public class WeatherDataDeserializer
     {
+        /// <summary>
+        /// Deserializes JSON data into a WeatherData object.
+        /// </summary>
+        /// <param name="json">The JSON string containing weather data.</param>
+        /// <returns>A WeatherData object representing the deserialized data.</returns>
+        /// <exception cref="Exception">Thrown when required JSON properties are missing.</exception>
         public WeatherData DeserializeWeatherData(string json)
         {
             var jsonObject = JObject.Parse(json);
@@ -277,8 +504,16 @@ namespace WeatherApplication
         }
     }
 
+    /// <summary>
+    /// Represents an exception thrown by the weather service.
+    /// </summary>
     public class WeatherServiceException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the WeatherServiceException class with a specified error message and inner exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that caused the current exception.</param>
         public WeatherServiceException(string message, Exception innerException) : base(message, innerException)
         {
         }

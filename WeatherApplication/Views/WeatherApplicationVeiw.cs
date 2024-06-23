@@ -2,6 +2,9 @@
 
 namespace WeatherApplication.Views
 {
+    /// <summary>
+    /// View class responsible for rendering weather data to the console.
+    /// </summary>
     public class WeatherApplicationView
     {
         /// <summary>
@@ -42,7 +45,7 @@ namespace WeatherApplication.Views
         /// Helper method to format temperature values.
         /// </summary>
         /// <param name="temperature">Temperature value in Celsius.</param>
-        /// <returns>Formatted temperature string.</returns>
+        /// <returns>Formatted temperature string, or "N/A" if temperature is null.</returns>
         private string FormatTemperature(double? temperature)
         {
             return temperature.HasValue ? $"{temperature.Value}°C" : "N/A";

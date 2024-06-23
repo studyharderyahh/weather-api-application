@@ -15,6 +15,7 @@ namespace WeatherApplication.Views
         /// <param name="flares">List of SolarFlareModel objects representing solar flares.</param>
         public void DisplayFlares(List<SolarFlareModel> flares)
         {
+            // Check if the list of flares is null or empty
             if (flares == null || flares.Count == 0)
             {
                 PrintNoDataMessage();
@@ -42,6 +43,7 @@ namespace WeatherApplication.Views
         private void PrintFlaresHeader()
         {
             Console.WriteLine("Solar Flares Data:");
+            Console.WriteLine("-----------------");
         }
 
         /// <summary>
