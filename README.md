@@ -41,6 +41,8 @@ public static class ApiConfig
     public static string ApiKey = "your_api_key_here";
     public static string BaseUrl = "https://api.openweathermap.org/data/2.5/";
 }
+```
+
 🧪 Testing
 The solution may include a TestWeatherProject project with unit tests. Run the tests using the built-in Visual Studio Test Explorer.
 
